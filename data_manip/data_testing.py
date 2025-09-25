@@ -15,9 +15,10 @@ train_labels = np.load("MNIST_Dataset/train_labels.npy")
 random_index = random.randint(0, 60000)
 
 # Display the random image
-pyplot.imshow(train_images[random_index], cmap=pyplot.get_cmap('gray'))
-pyplot.title("Label: " + str(train_labels[random_index]))
+#pyplot.imshow(train_images[random_index], cmap=pyplot.get_cmap('gray'))
+#pyplot.title("Label: " + str(train_labels[random_index]))
 #pyplot.show()
+
 
 # Print details of the random image
 print("Image shape: " + str(train_images[random_index].shape))
@@ -32,7 +33,7 @@ print("Image array (flattened): \n" + str(train_images[random_index].flatten()))
 #print("Image array (mean-std normalized): \n" + str((train_images[random_index].flatten()-np.mean(train_images[random_index]))/np.std(train_images[random_index])))
 
 # Display the image after showing details
-pyplot.show()
+#pyplot.show()
 
 
 # Plot the first 9 images from the training set
@@ -52,3 +53,29 @@ pyplot.show()
 #     pyplot.title("Label: " + str(train_labels[zero_indices[i]]))
 #     pyplot.axis('off')
 # pyplot.show()
+
+
+# Invert colors of random image and display
+pyplot.subplot(2, 2, 1)
+pyplot.imshow(train_images[random_index])
+pyplot.title("Label: " + str(train_labels[random_index]))
+pyplot.axis('off')
+
+pyplot.subplot(2, 2, 2)
+inverted_image = 255 - train_images[random_index]
+pyplot.imshow(inverted_image)
+pyplot.title("Inverted colors of label: " + str(train_labels[random_index]))
+pyplot.axis('off')
+
+pyplot.subplot(2, 2, 3)
+pyplot.imshow(train_images[random_index], cmap=pyplot.get_cmap('gray'))
+pyplot.title("Label: " + str(train_labels[random_index]))
+pyplot.axis('off')
+
+pyplot.subplot(2, 2, 4)
+inverted_image = 255 - train_images[random_index]
+pyplot.imshow(inverted_image, cmap=pyplot.get_cmap('gray'))
+pyplot.title("Inverted colors of label: " + str(train_labels[random_index]))
+pyplot.axis('off')
+
+pyplot.show()
