@@ -15,12 +15,12 @@ def array_to_clingo_facts(arr, predicate_name, label, start_index=0):
     List[str]: A list of strings representing clingo facts.
     """
     facts = []
-    it = np.nditer(arr, flags=['multi_index'])
-    for x in it:
-        index = it.multi_index
+    iter = np.nditer(arr, flags=['multi_index'])
+    for grey in iter:
+        index = iter.multi_index
         # Adjust index based on start_index
         coordinates = tuple(i + start_index for i in index)
-        fact = f"{predicate_name}({', '.join(map(str, coordinates))}, {x}, {label})."
+        fact = f"{predicate_name}({', '.join(map(str, coordinates))}, {grey}, {label})."
         facts.append(fact)
     return facts
 

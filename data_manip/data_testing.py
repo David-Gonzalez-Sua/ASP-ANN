@@ -55,24 +55,29 @@ print("Image array (flattened): \n" + str(train_images[random_index].flatten()))
 # pyplot.show()
 
 
+#train_images[random_index][15][1] = 255 - train_images[random_index][15][1]  # Invert a pixel value for testing
+
+
 # Invert colors of random image and display
-pyplot.subplot(2, 2, 1)
-pyplot.imshow(train_images[random_index])
-pyplot.title("Label: " + str(train_labels[random_index]))
-pyplot.axis('off')
+# pyplot.subplot(2, 2, 1)
+# pyplot.imshow(train_images[random_index])
+# pyplot.title("Label: " + str(train_labels[random_index]))
+# pyplot.axis('off')
 
-pyplot.subplot(2, 2, 2)
-inverted_image = 255 - train_images[random_index]
-pyplot.imshow(inverted_image)
-pyplot.title("Inverted colors of label: " + str(train_labels[random_index]))
-pyplot.axis('off')
+# pyplot.subplot(2, 2, 2)
+# inverted_image = 255 - train_images[random_index]
+# pyplot.imshow(inverted_image)
+# pyplot.title("Inverted colors of label: " + str(train_labels[random_index]))
+# pyplot.axis('off')
 
-pyplot.subplot(2, 2, 3)
+# pyplot.subplot(2, 2, 3)
+pyplot.subplot(1, 2, 1)
 pyplot.imshow(train_images[random_index], cmap=pyplot.get_cmap('gray'))
 pyplot.title("Label: " + str(train_labels[random_index]))
 pyplot.axis('off')
 
-pyplot.subplot(2, 2, 4)
+# pyplot.subplot(2, 2, 4)
+pyplot.subplot(1, 2, 2)
 inverted_image = 255 - train_images[random_index]
 pyplot.imshow(inverted_image, cmap=pyplot.get_cmap('gray'))
 pyplot.title("Inverted colors of label: " + str(train_labels[random_index]))
