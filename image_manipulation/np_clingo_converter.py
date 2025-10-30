@@ -1,5 +1,4 @@
 import numpy as np
-from matplotlib import pyplot
 
 
 def array_to_clingo_facts(arr, predicate_name, label, start_index=0):
@@ -25,32 +24,20 @@ def array_to_clingo_facts(arr, predicate_name, label, start_index=0):
     return facts
 
 
-def plot_image(arr, label):
-    """
-    Plot a 2D numpy array as an image with a title.
-
-    Parameters:
-    arr (np.ndarray): The input 2D numpy array.
-    label (int): The label to display in the title.
-    """
-    pyplot.imshow(arr, cmap=pyplot.get_cmap('gray'))
-    pyplot.title("Label: " + str(label))
-    pyplot.axis('off')
-    pyplot.show()
-
-
 # Load the data
 train_images = np.load("MNIST_Dataset/train_images.npy")
 train_labels = np.load("MNIST_Dataset/train_labels.npy")
-#test_images = np.load("MNIST_Dataset/test_images.npy")
-#test_labels = np.load("MNIST_Dataset/test_labels.npy")
 
+# NOTE: Need to add argument for image index
+image_index = 0  # Change this index to test different images
 
-image_facts = array_to_clingo_facts(train_images[0], "pixel", train_labels[0], start_index=1)
+# Save image index to .npy file for reference
+np.save("new_datasets/MNIST_image.npy", train_images[image_index])
+np.save("new_datasets/MNIST_image_label.npy", train_labels[image_index])
 
-#print("\n".join(image_facts))
-#plot_image(train_images[0], train_labels[0])
+# Convert image to clingo facts
+image_facts = array_to_clingo_facts(train_images[image_index], "pixel", train_labels[image_index], start_index=1)
 
-# .lp file output
+# .lp file output (NOTE: Need to add argument for image name)
 with open("new_datasets/MNIST_image.lp", "w") as f:
     f.write("\n".join(image_facts))

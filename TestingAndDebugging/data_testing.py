@@ -84,3 +84,9 @@ pyplot.title("Inverted colors of label: " + str(train_labels[random_index]))
 pyplot.axis('off')
 
 pyplot.show()
+
+# Print label info
+print("Label: " + str(train_labels[random_index]))
+# label shape 
+print("Label shape: " + str(train_labels.shape))
+print("Label type: " + str(type(train_labels[random_index])))

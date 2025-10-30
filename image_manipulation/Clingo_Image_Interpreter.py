@@ -1,5 +1,5 @@
 # Use:
-# clingo .\data_manip\clingo_color_inverter.lp .\new_datasets\MNIST_image.lp | python .\data_manip\Clingo_Image_Interpreter.py > .\new_datasets\MNIST_image_inverted.lp
+# clingo .\image_manipulation\clingo_color_inverter.lp .\new_datasets\MNIST_image.lp | python .\image_manipulation\Clingo_Image_Interpreter.py > .\new_datasets\MNIST_image_inverted.lp
 # 
 #
 # Note:
