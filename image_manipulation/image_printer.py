@@ -1,3 +1,14 @@
+# Prints 1 or 2 images in .npy format using matplotlib
+# 
+# Use: image_printer.py -n <image_index> -f <input_file> -i <input_folder>
+#   where: 
+#       image_index is the original index of the image in the dataset. Prints both images if included. Only prints manipulated image otherwise.
+#       input_file is the name of the input .npy file
+#       input_folder is the folder to get the input files from
+# 
+
+
+import argparse
 import numpy as np
 from matplotlib import pyplot
 
@@ -34,19 +45,41 @@ def plot_multiple_images(images, labels, rows=3, cols=3):
     pyplot.show()
 
 
-# Print original image from .npy file
-original_image = np.load("new_datasets/MNIST_image.npy")
-original_label = np.load("new_datasets/MNIST_image_label.npy")
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-n', default = -1, type = int,
+                    help = "Original index of the image in the dataset. Prints both images if included. Only prints manipulated image otherwise. (Default = -1)")
+
+parser.add_argument('-f', default = "MNIST_image_new", type = str,
+                    help = "Input .npy file name. (Default = 'MNIST_image_new')")
+
+parser.add_argument('-i', default = "new_datasets", type = str,
+                    help = "Folder to get the input files from. (Default = 'new_datasets')")
+
+args = parser.parse_args()
+
+image_index = args.n
+input_file = args.f
+input_folder = args.i
+
+# Load original image from .npy file
+train_images = np.load("MNIST_Dataset/train_images.npy")
+train_labels = np.load("MNIST_Dataset/train_labels.npy")
+
+original_image = train_images[image_index]
+original_label = train_labels[image_index]
 
 # Display original image
 #plot_image(original_image, original_label)
 
 # Print manipulated image from .npy file
-manipulated_image = np.load("new_datasets/MNIST_image_new.npy")
-manipulated_label = np.load("new_datasets/MNIST_image_label_new.npy", allow_pickle=True).item()
+manipulated_image = np.load(input_folder + "/" + input_file + ".npy")
+manipulated_label = np.load(input_folder + "/" + input_file + "_label.npy", allow_pickle=True).item()
 
 # Display manipulated image
-# plot_image(manipulated_image, manipulated_label)
+if image_index == -1:
+    plot_image(manipulated_image, manipulated_label)
 
-# Display both images side by side
-plot_multiple_images([original_image, manipulated_image], [original_label, str(manipulated_label) + " - modified"], rows=1, cols=2)
+# Display original and manipulated images side by side
+else:
+    plot_multiple_images([original_image, manipulated_image], [original_label, str(manipulated_label) + " - modified"], rows=1, cols=2)

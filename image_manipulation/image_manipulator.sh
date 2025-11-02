@@ -1,20 +1,28 @@
 #!/bin/bash
-# Usage: bash ./image_manipulation/image_manipulator.sh <Manipulation Type>
+# Usage: bash ./image_manipulation/image_manipulator.sh <Manipulation Type> <Image Index>
 #
 # Inverting Colors: bash ./image_manipulation/image_manipulator.sh color_invert
 #
 
 
+# NOTE: Change this to your Python path which includes necessary packages
 PYTHON="/mnt/c/Users/dgjsu/anaconda3/envs/potcassco/python.exe"
 
-manip="$1"  # this is the argument you pass
+manipulation="$1" # Manipulator name (e.g., color_invert)
+image_index="$2" # Image index (optional)
 
 # If no argument is provided, show usage and exit
-if [ -z "$manip" ]; then
+if [ -z "$manipulation" ]; then
   echo "Usage: $0 <manipulator_name>"
   echo "Example: $0 color_invert"
   exit 1
 fi
+
+if [ -z "$image_index" ]; then
+  echo "No index provided. Using default image index 0."
+  image_index="0" # Default to first image if not provided
+fi
+
 
 # Workflow
 # 1. Start workflow (THROUGH BASH)
@@ -25,20 +33,25 @@ fi
 # 6. Convert clingo facts back to numpy (clingo_np_converter.py)
 # 7. Display original and manipulated images (image_printer.py)
 
-# Use the manipulator name to construct filenames automatically
-program="./image_manipulation/clingo_${manip}.lp"
-clingo_input="./new_datasets/MNIST_image.lp"
-output="./new_datasets/MNIST_image_${manip}.lp"
-interpreter="./image_manipulation/Clingo_Image_Interpreter.py"
+
+# Construct filenames automatically
+original_image_name="MNIST_image_${image_index}"
+new_image_name="MNIST_image_${image_index}_${manipulation}"
+
 np_clingo_converter="./image_manipulation/np_clingo_converter.py"
+original_clingo_file="./new_datasets/${original_image_name}.lp"
+
+manip_program="./image_manipulation/clingo_${manipulation}.lp"
+interpreter="./image_manipulation/Clingo_Image_Interpreter.py"
+
 clingo_np_converter="./image_manipulation/clingo_np_converter.py"
 image_printer="./image_manipulation/image_printer.py"
 
 # Run the commands
 #conda activate potcassco
-$PYTHON "$np_clingo_converter"
-clingo "$program" "$clingo_input" | python3 "$interpreter" > "$output"
-$PYTHON "$clingo_np_converter"
-$PYTHON "$image_printer"
+$PYTHON "$np_clingo_converter" "-n" "${image_index}" "-o" "${original_image_name}" "-d" "new_datasets"
+clingo "$manip_program" "$original_clingo_file" | python3 "$interpreter" "-o" "${new_image_name}" "-d" "new_datasets"
+$PYTHON "$clingo_np_converter" "-f" "${new_image_name}" "-i" "new_datasets" "-o" "${new_image_name}" "-d" "new_datasets"
+$PYTHON "$image_printer" "-n" "${image_index}" "-f" "${new_image_name}" "-i" "new_datasets"
 
 echo "✅ Created: $output using $program"
