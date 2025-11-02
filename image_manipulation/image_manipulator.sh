@@ -1,5 +1,7 @@
 #!/bin/bash
 # Usage: bash ./image_manipulation/image_manipulator.sh <Manipulation Type> <Image Index>
+#   where <Manipulation Type> is the name of the manipulation (e.g., color_invert)
+#         <Image Index> is the index of the image in the MNIST dataset (optional
 #
 # Inverting Colors: bash ./image_manipulation/image_manipulator.sh color_invert
 #
