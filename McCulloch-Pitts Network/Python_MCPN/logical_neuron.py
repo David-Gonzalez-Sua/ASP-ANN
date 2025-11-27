@@ -8,7 +8,6 @@ class LogicalNeuron:
         self.inputs = inputs
         self.name = name
         
-        self.output_edges = []
         self.activated = False
 
     def activation_function(self):
@@ -53,12 +52,6 @@ class LogicalNeuron:
 
     def get_inputs(self):
         return self.inputs
-
-    def add_output_edge(self, neuron):
-        self.output_edges.append(neuron)
-
-    def get_output_edges(self):
-        return self.output_edges
     
     def __hash__(self):
         return hash(self.name)

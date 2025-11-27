@@ -1,4 +1,10 @@
 # Neural network implementation of an 8-bit adder using McCulloch-Pitts neurons
+# Each bit addition is handled by a full adder network
+# The network is built bit by bit, propagating carry bits as needed
+# Use: python 8bit_adder.py -x1 <value1> -x2 <value2> -b <bits>
+# Example usage: python '.\McCulloch-Pitts Network\Python_MCPN\8bit_adder.py' -x1 250 -x2 750 -b 16
+
+
 from collections import defaultdict
 from collections import deque
 import argparse
@@ -77,7 +83,7 @@ while processing_queue:
     
     output = current_neuron.activation_function()
 
-    print(f'Neuron: {current_neuron.name}, Inputs: {current_neuron.get_inputs()}, Output: {output}')
+    # print(f'Neuron: {current_neuron.name}, Inputs: {current_neuron.get_inputs()}, Output: {output}')
 
     if 'input' in current_neuron.name.lower():
         current_neuron2 = processing_queue.popleft()
