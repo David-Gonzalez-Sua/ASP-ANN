@@ -1,5 +1,6 @@
 %% Converts decimal numbers to binary and vice versa
-%% clingo decimal_binary_converter.lp -c n=<num> -c b=<bits>
+%% use: clingo decimal_binary_converter.lp -c n=<num> -c b=<bits>
+%% -- DOES NOT WORK -- IN PROGRESS --
 
 decimal(7, n).
 bits(b).
