@@ -25,6 +25,7 @@ bit(b, 6, 0).
 bit(b, 7, 0).
 
 % Expected result: Binary 40
+% binary_e(0, 0, 1, 0, 1, 0, 0, 0).
 % bit(e, 0, 0).
 % bit(e, 1, 0).
 % bit(e, 2, 0).

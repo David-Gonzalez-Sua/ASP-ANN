@@ -1,5 +1,5 @@
 ## Creates DOT code to visualize a graph made by the 8bit_adder.lp program.
-## Use: clingo '.\McCulloch-Pitts Network\Clingo_MCPN\8bit_adder.lp' | python '.\McCulloch-Pitts Network\Clingo_MCPN\graph_visualizer.py'
+## Use: clingo '.\McCulloch-Pitts_Network\Clingo_MCPN\8bit_adder.lp' | python '.\McCulloch-Pitts_Network\Clingo_MCPN\graph_visualizer.py' | dot -T pdf -o '.\McCulloch-Pitts_Network\Clingo_MCPN\network_visualizer.pdf'
 
 
 # Reading in clingo output

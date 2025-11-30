@@ -1,6 +1,6 @@
-%% Use: clingo '.\McCulloch-Pitts Network\Clingo_MCPN\binary_nuumber.lp' '.\McCulloch-Pitts Network\Clingo_MCPN\logical_neuron.lp' '.\McCulloch-Pitts Network\Clingo_MCPN\full_adder_network.lp' '.\McCulloch-Pitts Network\Clingo_MCPN\8bit_adder.lp'
-%% Use: clingo '.\McCulloch-Pitts Network\Clingo_MCPN\8bit_adder.lp'
-%% Use: clingo '.\McCulloch-Pitts Network\Clingo_MCPN\8bit_adder.lp' | python '.\McCulloch-Pitts Network\Clingo_MCPN\graph_visualizer.py' | dot -T pdf -o '.\McCulloch-Pitts Network\Clingo_MCPN\network_visualizer.pdf'
+%% Use: clingo '.\McCulloch-Pitts Network\TestingAndDebugging\single_file_adder.lp' | python '.\McCulloch-Pitts Network\Clingo_MCPN\graph_visualizer.py' | dot -T pdf -o '.\McCulloch-Pitts Network\Clingo_MCPN\network_visualizer.pdf'
+%% Use: clingo '.\McCulloch-Pitts Network\TestingAndDebugging\single_file_adder.lp'
+
 
 
 %%% BINARY NUMBERS %%%

@@ -34,6 +34,7 @@ bits = args.b
 
 x1_bin = dbc.decimal_to_binary(x1, bits)
 x2_bin = dbc.decimal_to_binary(x2, bits)
+print(x1_bin)
 
 # Directed edges from neurons to neurons stored as adjacency list
 # {nueron1: [neuron2, neuron3]} 
