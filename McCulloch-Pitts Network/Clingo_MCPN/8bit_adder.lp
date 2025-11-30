@@ -1,9 +1,11 @@
 %% Use: clingo '.\McCulloch-Pitts Network\Clingo_MCPN\binary_nuumber.lp' '.\McCulloch-Pitts Network\Clingo_MCPN\logical_neuron.lp' '.\McCulloch-Pitts Network\Clingo_MCPN\full_adder_network.lp' '.\McCulloch-Pitts Network\Clingo_MCPN\8bit_adder.lp'
+%% Use: clingo '.\McCulloch-Pitts Network\Clingo_MCPN\8bit_adder.lp'
+%% Use: clingo '.\McCulloch-Pitts Network\Clingo_MCPN\8bit_adder.lp' | python '.\McCulloch-Pitts Network\Clingo_MCPN\graph_visualizer.py' | dot -T pdf -o '.\McCulloch-Pitts Network\Clingo_MCPN\network_visualizer.pdf'
 
 
 %%% BINARY NUMBERS %%%
 
-%% Holds binary number representations
+%% Holds binary number representations of testing parameters
 % Binary 5
 bit(a, 0, 1).
 bit(a, 1, 0).
@@ -35,114 +37,193 @@ bit(b, 7, 0).
 % bit(e, 7, 0).
 
 
-%%% LOGICAL NEURONS %%%
+%%% Logical Nueron %%%
 
 %% Nueron Parameters
 % Indexes for 8-bit numbers
 index(0..7).
+carry_index(0..8).
 
 % Possible output values for a logical neuron
 outputs(0;1).
 
 % Neuron IDs
-neuron_ID(a;b;carry;sum_out;
-    xor1;and1;xor2;and2;or1).
+neuron_ID(a;b;output;xor1;and1;xor2;and2;or1).
 
 % Neuron threshold
 threshold(1).
 
 %% Neuron definitions
 neuron(ID, Index, Val) :- neuron_ID(ID), index(Index), outputs(Val).
-% neuron(ID, Index, Val) :- outputs(Val), ID = carry, Index = 8.
-% neuron(carry, 8, _).
+neuron(ID, Index, Val) :- carry_index(Index), outputs(Val), ID = carry.
 
+% Forces one fact of type neuron for each actual neuron - DOESNT WORK i think
+% neuron(ID, Index, Val) :- neuron_input(ID, Index, Val).
+% neuron(ID, Index, Val) :- neuron_carry(ID, Index, Val).
+% neuron(ID, Index, Val) :- neuron_xor(ID, Index, Val).
+% neuron(ID, Index, Val) :- neuron_and(ID, Index, Val).
+% neuron(ID, Index, Val) :- neuron_or(ID, Index, Val).
+% neuron(ID, Index, Val) :- neuron_output(ID, Index, Val).
+
+% Forces one value per neuron
 % Layer 1 - Input Layer
-neuron_carry(ID, Index, Val) :- neuron(ID, Index, Val), ID = carry, Index = 0, Val = 0.
-neuron_input(ID, Index, Val) :- neuron(ID, Index, Val), bit(ID, Index, Val).
+1 { neuron_carry(ID, Index, Val) : neuron(ID, Index, Val) } 1 :- ID = carry, Index = 0, Val = 0.
+1 { neuron_input(ID, Index, Val) : neuron(ID, Index, Val) } 1 :- bit(ID, Index, Val).
 
 % Layers 2-4 - "Hidden" Layers
-neuron_carry(ID, Index, Val) :- neuron(ID, Index, Val), ID = carry.
-neuron_xor1(ID, Index, Val) :- neuron(ID, Index, Val), ID = xor1.
-neuron_and1(ID, Index, Val) :- neuron(ID, Index, Val), ID = and1.
-neuron_xor2(ID, Index, Val) :- neuron(ID, Index, Val), ID = xor2.
-neuron_and2(ID, Index, Val) :- neuron(ID, Index, Val), ID = and2.
-neuron_or1(ID, Index, Val) :- neuron(ID, Index, Val), ID = or1.
+1 { neuron_carry(ID, Index, Val) : neuron(ID, Index, Val) } 1 :- index(Index), ID = carry.
+1 { neuron_xor(ID, Index, Val) : neuron(ID, Index, Val) } 1 :- index(Index), ID = xor1.
+1 { neuron_and(ID, Index, Val) : neuron(ID, Index, Val) } 1 :- index(Index), ID = and1.
+1 { neuron_xor(ID, Index, Val) : neuron(ID, Index, Val) } 1 :- index(Index), ID = xor2.
+1 { neuron_and(ID, Index, Val) : neuron(ID, Index, Val) } 1 :- index(Index), ID = and2.
+1 { neuron_or(ID, Index, Val) : neuron(ID, Index, Val) } 1 :- index(Index), ID = or1.
 
 % Layer 5 - Output Layer
-neuron_sum_out(ID, Index, Val) :- neuron(ID, Index, Val), ID = sum_out.
-neuron_carry(ID, Index, Val) :- neuron(ID, Index, _), outputs(Val), ID = carry, Index = 8.
-
-% Only 1 output value per neuron
-1 { neuron(ID, Index, Val) : outputs(Val) } 1 :- neuron_ID(ID), index(Index).
-1 { neuron(carry, 8, Val) : outputs(Val) } 1
+1 { neuron_output(ID, Index, Val) : neuron(ID, Index, Val) } 1 :- index(Index), ID = output.
+1 { neuron_carry(ID, Index, Val) : neuron(ID, Index, Val) } 1 :- ID = carry, Index = 8.
 
 
 %%% FULL ADDER NETWORK CONNECTIONS %%%
-edge(Source_ID, Target_ID, Index, Val) :-
-    neuron(Source_ID, Index, Val),
-    neuron(Target_ID, Index, _), 
-    Source_ID = a, Target_ID = xor1.
+
 %% Graph Edges
 % Layer 1 -> 2
 edge(Source_ID, Target_ID, Index, Val) :- 
-    neuron(Source_ID, Index, Val), Source_ID = a,
-    neuron(Target_ID, Index, _), Target_ID = xor1.
+    neuron_input(Source_ID, Index, Val), Source_ID = a,
+    neuron_xor(Target_ID, Index, _), Target_ID = xor1.
 edge(Source_ID, Target_ID, Index, Val) :- 
-    neuron(Source_ID, Index, Val), Source_ID = a,
-    neuron(Target_ID, Index, _), Target_ID = and1.
+    neuron_input(Source_ID, Index, Val), Source_ID = a,
+    neuron_and(Target_ID, Index, _), Target_ID = and1.
 
 edge(Source_ID, Target_ID, Index, Val) :- 
-    neuron(Source_ID, Index, Val), Source_ID = b,
-    neuron(Target_ID, Index, _), Target_ID = xor1.
+    neuron_input(Source_ID, Index, Val), Source_ID = b,
+    neuron_xor(Target_ID, Index, _), Target_ID = xor1.
 edge(Source_ID, Target_ID, Index, Val) :- 
-    neuron(Source_ID, Index, Val), Source_ID = b,
-    neuron(Target_ID, Index, _), Target_ID = and1.
+    neuron_input(Source_ID, Index, Val), Source_ID = b,
+    neuron_and(Target_ID, Index, _), Target_ID = and1.
 
 edge(Source_ID, Target_ID, Index, Val) :- 
-    neuron(Source_ID, Index, Val), Source_ID = carry,
-    neuron(Target_ID, Index, _), Target_ID = xor2.
+    neuron_carry(Source_ID, Index, Val), Source_ID = carry,
+    neuron_xor(Target_ID, Index, _), Target_ID = xor2.
 edge(Source_ID, Target_ID, Index, Val) :- 
-    neuron(Source_ID, Index, Val), Source_ID = carry,
-    neuron(Target_ID, Index, _), Target_ID = and2.
+    neuron_carry(Source_ID, Index, Val), Source_ID = carry,
+    neuron_and(Target_ID, Index, _), Target_ID = and2.
 
 % Layer 2 -> 3
 edge(Source_ID, Target_ID, Index, Val) :- 
-    neuron(Source_ID, Index, Val), Source_ID = xor1,
-    neuron(Target_ID, Index, _), Target_ID = xor2.
+    neuron_xor(Source_ID, Index, Val), Source_ID = xor1,
+    neuron_xor(Target_ID, Index, _), Target_ID = xor2.
 edge(Source_ID, Target_ID, Index, Val) :- 
-    neuron(Source_ID, Index, Val), Source_ID = xor1,
-    neuron(Target_ID, Index, _), Target_ID = and2.
+    neuron_xor(Source_ID, Index, Val), Source_ID = xor1,
+    neuron_and(Target_ID, Index, _), Target_ID = and2.
 
 edge(Source_ID, Target_ID, Index, Val) :- 
-    neuron(Source_ID, Index, Val), Source_ID = and1,
-    neuron(Target_ID, Index, _), Target_ID = or1.
+    neuron_and(Source_ID, Index, Val), Source_ID = and1,
+    neuron_or(Target_ID, Index, _), Target_ID = or1.
 
-% Layer 3 -> 4
+% Layer 3 -> 4, 5
 edge(Source_ID, Target_ID, Index, Val) :- 
-    neuron(Source_ID, Index, Val), Source_ID = xor2,
-    neuron(Target_ID, Index, _), Target_ID = sum_out.
+    neuron_xor(Source_ID, Index, Val), Source_ID = xor2,
+    neuron_output(Target_ID, Index, _), Target_ID = output.
 
 edge(Source_ID, Target_ID, Index, Val) :- 
-    neuron(Source_ID, Index, Val), Source_ID = and2,
-    neuron(Target_ID, Index, _), Target_ID = or1.
+    neuron_and(Source_ID, Index, Val), Source_ID = and2,
+    neuron_or(Target_ID, Index, _), Target_ID = or1.
 
 % Layer 4 -> 5
-edge(Source_ID, Target_ID, Index, Val) :- 
-    neuron(Source_ID, Index, Val), Source_ID = or1,
-    neuron(Target_ID, Index1, _), Target_ID = carry, Index1 = Index + 1.
+% edge(Source_ID, Target_ID, Index, Val) :- 
+edge(Source_ID, Target_ID, Target_Index, Val) :- 
+    neuron_or(Source_ID, Source_Index, Val), Source_ID = or1,
+    neuron_carry(Target_ID, Target_Index, _), Target_ID = carry, 
+    Target_Index = Source_Index + 1.
 
 
 %%% ACTIVATION FUNCTIONS %%%
 
-% neuron(ID, Index, Val)
+% 2-var excitation functions
+exc_fun(A, B, Exc, Theta, Type) :- 
+    outputs(A), outputs(B), 
+    Type = xor, Theta = 1, 
+    Exc = (A + B) - (2 * A * B).
+
+exc_fun(A, B, Exc, Theta, Type) :- 
+    outputs(A), outputs(B), 
+    Type = and, Theta = 1, 
+    Exc = A * B.
+
+exc_fun(A, B, Exc, Theta, Type) :- 
+    outputs(A), outputs(B), 
+    Type = or, Theta = 1, 
+    Exc = A + B.
+
+% 2-var activation function
+act_fun(A, B, Output, Type) :-
+    exc_fun(A, B, Exc, Theta, Type),
+    Exc >= Theta, Output = 1.
+act_fun(A, B, Output, Type) :-
+    exc_fun(A, B, Exc, Theta, Type),
+    Exc < Theta, Output = 0.
+
+% 1-var excitation functions
+exc_fun(A, Exc, carry) :- outputs(A), Exc = A.
+exc_fun(A, Exc, output) :- outputs(A), Exc = A.
+
+% 1-var activation function
+act_fun(A, Output, Type) :-
+    exc_fun(A, Exc, Type),
+    Output = Exc.
+
+%% Neuron Activations
+neuron_xor(ID, Index, Val) :-
+    edge(Source1_ID, ID, Index, Input1), 
+    edge(Source2_ID, ID, Index, Input2), 
+    Source1_ID != Source2_ID, 
+    act_fun(Input1, Input2, Val, xor).
+
+neuron_and(ID, Index, Val) :-
+    edge(Source1_ID, ID, Index, Input1),
+    edge(Source2_ID, ID, Index, Input2),
+    Source1_ID != Source2_ID,
+    act_fun(Input1, Input2, Val, and).
+
+neuron_or(ID, Index, Val) :-
+    edge(Source1_ID, ID, Index, Input1),
+    edge(Source2_ID, ID, Index, Input2),
+    Source1_ID != Source2_ID,
+    act_fun(Input1, Input2, Val, or).
+
+neuron_output(ID, Index, Val) :-
+    edge(Source_ID, ID, Index, Input),
+    act_fun(Input, Val, output).
+
+neuron_carry(ID, Index, Val) :-
+    edge(Source_ID, ID, Index, Input),
+    act_fun(Input, Val, carry),
+    Index > 0.
 
 
+%%% SHOW SUM IN A READABLE FORMAT %%%
 
-% sum_bit(e, Index, Val) :- neuron(sum_out, Index, Val).
+%% Show answer in binary
+sum_bit(Index, Val) :- neuron_output(output, Index, Val).
+binary_sum(B7, B6, B5, B4, B3, B2, B1, B0) :- 
+    sum_bit(7, B7), sum_bit(6, B6),
+    sum_bit(5, B5), sum_bit(4, B4),
+    sum_bit(3, B3), sum_bit(2, B2),
+    sum_bit(1, B1), sum_bit(0, B0).
+
+#show sum_bit/2.
+#show binary_sum/8.
+
+%% Show edges to create graph visualization
+% #show edge/4.
 
 
-%% Run activation functions for every edge
+% #show neuron_or1/3.
+% or1(Index, Val) :- neuron(or1, Index, Val).
+% #show or1/2.
+% edge_test(or1, carry, Carry_Index, Val) :- edge(or1, carry, Carry_Index, Val).
+% edge_test(carry, xor2, 0, Val) :- edge(carry, xor2, 0, Val).
+% #show edge_test/4.
 
-
-% #show sum_out/3.
-#show neuron/3.
+% xor_test(A, B, Exc) :- exc_fun(A, B, Exc, 1, xor).
+% #show xor_test/3.
