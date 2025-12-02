@@ -1,8 +1,8 @@
 # Neural network implementation of an 8-bit adder using McCulloch-Pitts neurons
 # Each bit addition is handled by a full adder network
 # The network is built bit by bit, propagating carry bits as needed
-# Use: python 8bit_adder.py -x1 <value1> -x2 <value2> -b <bits>
-# Example usage: python '.\McCulloch-Pitts Network\Python_MCPN\8bit_adder.py' -x1 250 -x2 750 -b 16
+# Use: python 8bit_adder.py -a <value1> -b <value2> -s <bits>
+# Example usage: python '.\McCulloch-Pitts Network\Python_MCPN\8bit_adder.py' -a 250 -b 750 -s 16
 
 
 from collections import defaultdict
@@ -28,13 +28,12 @@ parser.add_argument('-b', default=8, type = int,
 
 args = parser.parse_args()
 
-x1 = args.x1
-x2 = args.x2
-bits = args.b
+x1 = args.a
+x2 = args.b
+bits = args.s
 
 x1_bin = dbc.decimal_to_binary(x1, bits)
 x2_bin = dbc.decimal_to_binary(x2, bits)
-print(x1_bin)
 
 # Directed edges from neurons to neurons stored as adjacency list
 # {nueron1: [neuron2, neuron3]} 

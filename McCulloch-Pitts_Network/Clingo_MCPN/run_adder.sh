@@ -32,28 +32,28 @@ fi
 eight_bit_adder="./McCulloch-Pitts_Network/Clingo_MCPN/8bit_adder.lp"
 full_adder="./McCulloch-Pitts_Network/Clingo_MCPN/full_adder_network.lp"
 neuron_def="./McCulloch-Pitts_Network/Clingo_MCPN/logical_neuron.lp"
-num_conv_clingo="./McCulloch-Pitts_Network/Clingo_MCPN/decimal_binary_converter.lp"
-num_conv_python="./McCulloch-Pitts_Network/Python_MCPN/decimal_binary_converter.py"
+decimal_binary_converter_clingo="./McCulloch-Pitts_Network/Clingo_MCPN/decimal_binary_converter.lp"
+decimal_binary_converter_python="./McCulloch-Pitts_Network/Clingo_MCPN/decimal_binary_converter_for_clingo.py"
 default_input="./McCulloch-Pitts_Network/TestingAndDebugging/temp_binary_number.lp"
 graph_visualizer="./McCulloch-Pitts_Network/Clingo_MCPN/graph_visualizer.py"
-
-# Run the commands
-# $PYTHON "$np_clingo_converter" "-n" "${image_index}" "-o" "${original_image_name}" "-d" "new_datasets"
-# clingo "$manip_program" "$original_clingo_file" | python3 "$interpreter" "-o" "${new_image_name}" "-d" "new_datasets"
-# $PYTHON "$clingo_np_converter" "-f" "${new_image_name}" "-i" "new_datasets" "-o" "${new_image_name}" "-d" "new_datasets"
-# $PYTHON "$image_printer" "-n" "${image_index}" "-f" "${new_image_name}" "-i" "new_datasets"
-
-# echo "✅ Created: $output using $program"
+binary_input="./McCulloch-Pitts_Network/Clingo_MCPN/binary_input.lp"
 
 if [ -z "$2" ]; then
   # Uses default input values
-  clingo "$eight_bit_adder" "$full_adder" "$neuron_def" "$default_input"
+  clingo "$eight_bit_adder" "$full_adder" "$neuron_def" "$default_input" | tee >($PYTHON "$graph_visualizer") | $PYTHON "$decimal_binary_converter_python" "-f 1"
+  echo "✅ Created McCulloch-Pitts 8-Bit Adder with default values."
+  echo "✅ Visualized network created as pdf."
 
 else
   # Uses Clingo input converter
   # clingo "$eight_bit_adder" "$full_adder" "$neuron_def" "$default_input" "-c input_a=${input_a} -c input_b=${input_b} -c bits=${num_bits}"
 
   # Uses Python input converter
-  $PYTHON "$num_conv_python" "${input_a} ${input_b} ${num_bits}" | clingo "$eight_bit_adder" "$full_adder" "$neuron_def" | tee >($PYTHON "$graph_visualizer") | $PYTHON "$num_conv_python"
+  $PYTHON "$decimal_binary_converter_python" "-f 0" "-a ${input_a}" "-b ${input_b}" "-s ${num_bits}" > "$binary_input"
+  clingo "$eight_bit_adder" "$full_adder" "$neuron_def" "$binary_input" \
+  | tee >($PYTHON "$graph_visualizer") | $PYTHON "$decimal_binary_converter_python" "-f 1"
+  # $PYTHON "$decimal_binary_converter_python" "-f 0" "-a ${input_a}" "-b ${input_b}" "-s ${num_bits}"
 
 fi
+
+# echo "✅ Created: $output using $program"
