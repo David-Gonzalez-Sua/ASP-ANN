@@ -36,6 +36,8 @@ decimal_binary_converter_clingo="./McCulloch-Pitts_Network/Clingo_MCPN/decimal_b
 decimal_binary_converter_python="./McCulloch-Pitts_Network/Clingo_MCPN/decimal_binary_converter_for_clingo.py"
 default_input="./McCulloch-Pitts_Network/TestingAndDebugging/temp_binary_number.lp"
 graph_visualizer="./McCulloch-Pitts_Network/Clingo_MCPN/graph_visualizer.py"
+graph_code="./McCulloch-Pitts_Network/Clingo_MCPN/network_visualizer.txt"
+graph_pdf="./McCulloch-Pitts_Network/Clingo_MCPN/network_visualizer.pdf"
 binary_input="./McCulloch-Pitts_Network/Clingo_MCPN/binary_input.lp"
 
 if [ -z "$2" ]; then
@@ -51,8 +53,11 @@ else
   # Uses Python input converter
   $PYTHON "$decimal_binary_converter_python" "-f 0" "-a ${input_a}" "-b ${input_b}" "-s ${num_bits}" > "$binary_input"
   clingo "$eight_bit_adder" "$full_adder" "$neuron_def" "$binary_input" \
-  | tee >($PYTHON "$graph_visualizer") | $PYTHON "$decimal_binary_converter_python" "-f 1"
-  # $PYTHON "$decimal_binary_converter_python" "-f 0" "-a ${input_a}" "-b ${input_b}" "-s ${num_bits}"
+  | tee >($PYTHON "$graph_visualizer" > "$graph_code") \
+  | $PYTHON "$decimal_binary_converter_python" "-f 1"
+  # | tee >($PYTHON "$graph_visualizer" | dot "-T pdf" "-o ${graph_pdf}") \
+
+  dot "$graph_code" "-T" "pdf" "-o" "${graph_pdf}"
 
 fi
 

@@ -17,31 +17,50 @@ output = '''// Graph visualization using dot
 strict digraph G {
     rankdir=LR; // makes the graph flow left-to-right
 
-    // Align all inputs (bit0_a, bit0_b, ..., bit7_a, bit7_b)
-    { rank=same;
-      bit0_carry;
-      bit0_a; bit0_b;
-      bit1_a; bit1_b;
-      bit2_a; bit2_b;
-      bit3_a; bit3_b;
-      bit4_a; bit4_b;
-      bit5_a; bit5_b;
-      bit6_a; bit6_b;
-      bit7_a; bit7_b;
-    }
+'''
 
-    // Align all output sums horizontally
+#     // Align all inputs (bit0_a, bit0_b, ..., bit7_a, bit7_b)
+#     { rank=same;
+#       bit0_carry;
+#       bit0_a; bit0_b;
+#       bit1_a; bit1_b;
+#       bit2_a; bit2_b;
+#       bit3_a; bit3_b;
+#       bit4_a; bit4_b;
+#       bit5_a; bit5_b;
+#       bit6_a; bit6_b;
+#       bit7_a; bit7_b;
+#     }
+
+#     // Align all output sums horizontally
+#     { rank=same;
+#       bit0_output;
+#       bit1_output;
+#       bit2_output;
+#       bit3_output;
+#       bit4_output;
+#       bit5_output;
+#       bit6_output;
+#       bit7_output;
+#       bit8_carry;
+#     }
+
+# '''
+
+edges = ''
+nodes_a = '''// Allign inputs a
     { rank=same;
-      bit0_output;
-      bit1_output;
-      bit2_output;
-      bit3_output;
-      bit4_output;
-      bit5_output;
-      bit6_output;
-      bit7_output;
-      bit8_carry;
-    }
+      node [shape=primersite fontsize=50 fontname="times-bold" fontcolor=black color=black penwidth=1 margin=0.4 style=filled];
+
+'''
+nodes_b = '''// Allign inputs b
+    { rank=same;
+      node [shape=primersite fontsize=50 fontname="times-bold" fontcolor=firebrick1 color=firebrick1 penwidth=1 margin=0.4 style=filled];
+
+'''
+nodes_s = '''// Allign outputs
+    { rank=same;
+      node [shape=insulator fontsize=50 fontname="times-bold" penwidth=1 margin=0.4 style=filled];
 
 '''
 
@@ -53,13 +72,25 @@ if toks_next[0].startswith("OPT") or toks_next[0].startswith("SAT"):
         if t.startswith("edge"):
             line = t[5:-1]
             param = line.split(',')
-            if param[1] == 'carry':
-                edge = f'    bit{int(param[2])-1}_{param[0]} -> bit{param[2]}_{param[1]} [label={param[3]}] ;\n'
-            else:
-                edge = f'    bit{param[2]}_{param[0]} -> bit{param[2]}_{param[1]} [label={param[3]}] ;\n'
-            output += edge 
 
-    output += "\n} // Graph"
+            if param[0] == 'a':
+                nodes_a += f'    bit{param[2]}_a [label={param[3]} fillcolor={'lightblue' if param[3] == '1' else 'lightgray'}];\n'
+            if param[0] == 'b':
+                nodes_b += f'    bit{param[2]}_b [label={param[3]} fillcolor={'lightblue' if param[3] == '1' else 'lightgray'}];\n'
+            if param[1] == 'output':
+                nodes_s += f'    bit{param[2]}_output [label={param[3]} fillcolor={'lightblue' if param[3] == '1' else 'lightgray'}];\n'
+
+            if param[1] == 'carry':
+                edge = f'    bit{int(param[2])-1}_{param[0]} -> bit{param[2]}_{param[1]} [label={param[3]}];\n'
+            else:
+                edge = f'    bit{param[2]}_{param[0]} -> bit{param[2]}_{param[1]} [label={param[3]}];\n'
+            edges += edge 
+
+    nodes_a += '    }\n\n'
+    nodes_b += '    }\n\n'
+    nodes_s += '    }\n\n'
+
+    output += nodes_a + nodes_b + nodes_s + edges + "\n} // Graph"
     print(output + "\n")
 
 # In case of unsatisfiability
