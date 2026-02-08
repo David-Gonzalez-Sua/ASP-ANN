@@ -120,7 +120,7 @@ test_labels_full = np.load("MNIST_Dataset/test_labels.npy")  # Load test labels 
 
 # Create/load ANN
 network = create_network()
-network = load_network("python_trained_model.npy")
+# network = load_network("Adaptive_Network/Python_ANN/python_trained_model.npy")
 
 # Set training parameters
 training_amount = 1000  # Number of training samples to use: 0-60000
@@ -143,4 +143,4 @@ index = 0  # Change this index to test different images
 test_single_image(network, test_images_full, test_labels_full, index)
 
 # Saving the trained model
-network.save_model("python_trained_model.npy")
+network.save_network("Adaptive_Network/Python_ANN/python_trained_model.npy")
