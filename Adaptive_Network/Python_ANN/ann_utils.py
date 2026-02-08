@@ -4,11 +4,11 @@ import numpy as np
 from ann import ANN
 
 
-def create_network():
+def create_network(input_size=784, hidden_size=128, num_hidden_layers=2, output_size=10):
     # Image size is 28x28, sp flattened data will have 784 inputs.
     print("Building network...")
     network = ANN()
-    network.build_network(input_size=784, hidden_size=128, num_hidden_layers=2, output_size=10)
+    network.build_network(input_size, hidden_size, num_hidden_layers, output_size)
     print("Network built successfully.")
     return network
 

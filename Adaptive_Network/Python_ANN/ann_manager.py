@@ -29,6 +29,12 @@ testing_amount = 2000  # Number of testing samples to use: 0-10000
 epochs = 15  # Number of epochs to train for
 alpha = 0.01  # learning rate
 
+# Set network parameters
+input_size = 784  # 28x28 images flattened
+hidden_size = 128  # Number of neurons in each hidden layer
+num_hidden_layers = 2
+output_size = 10  # Number of output neurons (one for each digit class)
+
 
 #### ----------------------------------- MAIN ---------------------------------------- ####
 
@@ -41,7 +47,7 @@ test_images, test_labels = data_test[:testing_amount]
 if load_existing_model:
     network = utils.load_model(existing_model_filename)
 else:
-    network = utils.create_network()
+    network = utils.create_network(input_size, hidden_size, num_hidden_layers, output_size)
 
 # Train ANN
 if train_model:
