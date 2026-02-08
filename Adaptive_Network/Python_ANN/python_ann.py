@@ -122,9 +122,9 @@ network = create_network()
 # network = load_model("Adaptive_Network/Python_ANN/python_trained_model.npy")
 
 # Set training parameters
-training_amount = 1000  # Number of training samples to use: 0-60000
-testing_amount = 1000  # Number of testing samples to use: 0-10000
-epochs = 10  # Number of epochs to train for
+training_amount = 2000  # Number of training samples to use: 0-60000
+testing_amount = 2000  # Number of testing samples to use: 0-10000
+epochs = 15  # Number of epochs to train for
 alpha = 0.01  # learning rate
 
 # Train ANN
@@ -142,4 +142,5 @@ index = 0  # Change this index to test different images
 test_single_image(network, test_images_full, test_labels_full, index)
 
 # Saving the trained model
-network.save_network("Adaptive_Network/Python_ANN/python_trained_model.npy")
+network.save_network(f"Adaptive_Network/Python_ANN/python_trained_model.npy")
+# network.save_network(f"Adaptive_Network/Python_ANN/trained_models/ptm_{training_amount}i_{epochs}e_{int(1000*alpha)}a.npy")
