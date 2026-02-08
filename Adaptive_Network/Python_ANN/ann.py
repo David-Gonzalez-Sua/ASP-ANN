@@ -156,17 +156,20 @@ digraph G {
         output += '    { rank=same;\n'
         for neuron in network.input_layer:
             output += f'      {neuron.name} [label={neuron.get_value()}] ;\n'
+            # output += f'      {neuron.name} [label=''] ;\n'
         output += '    }\n\n'
 
         output += '    { rank=same;\n'
         for neuron in network.output_layer:
-            output += f'      {neuron.name} [label={neuron.get_value():.3f}] ;\n\n'
+            output += f'      {neuron.name} [label={neuron.get_value():.3f}] ;\n'
+            # output += f'      {neuron.name} [label=''] ;\n'
         output += '    }\n\n'
 
         for layer in network.hidden_layers:
             output += '    { rank=same ;\n'
             for neuron in layer:
                 output += f'      {neuron.name} [label={neuron.get_value():.3f}] ;\n'
+                # output += f'      {neuron.name} [label=''] ;\n'
             output += '    }\n\n'
 
         for neuron in network.edges:
