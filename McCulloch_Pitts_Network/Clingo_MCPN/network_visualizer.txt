@@ -7,16 +7,16 @@ strict digraph G {
       node [shape=primersite fontsize=50 fontname="times-bold" fontcolor=black color=black penwidth=1 margin=0.4 style=filled];
 
     bit7_a [label=0 fillcolor=lightgray];
-    bit6_a [label=1 fillcolor=lightblue];
-    bit5_a [label=1 fillcolor=lightblue];
+    bit6_a [label=0 fillcolor=lightgray];
+    bit5_a [label=0 fillcolor=lightgray];
     bit4_a [label=0 fillcolor=lightgray];
     bit3_a [label=0 fillcolor=lightgray];
     bit2_a [label=1 fillcolor=lightblue];
     bit1_a [label=0 fillcolor=lightgray];
     bit0_a [label=0 fillcolor=lightgray];
     bit7_a [label=0 fillcolor=lightgray];
-    bit6_a [label=1 fillcolor=lightblue];
-    bit5_a [label=1 fillcolor=lightblue];
+    bit6_a [label=0 fillcolor=lightgray];
+    bit5_a [label=0 fillcolor=lightgray];
     bit4_a [label=0 fillcolor=lightgray];
     bit3_a [label=0 fillcolor=lightgray];
     bit2_a [label=1 fillcolor=lightblue];
@@ -29,16 +29,16 @@ strict digraph G {
       node [shape=primersite fontsize=50 fontname="times-bold" fontcolor=firebrick1 color=firebrick1 penwidth=1 margin=0.4 style=filled];
 
     bit7_b [label=0 fillcolor=lightgray];
-    bit6_b [label=1 fillcolor=lightblue];
-    bit5_b [label=1 fillcolor=lightblue];
+    bit6_b [label=0 fillcolor=lightgray];
+    bit5_b [label=0 fillcolor=lightgray];
     bit4_b [label=0 fillcolor=lightgray];
     bit3_b [label=0 fillcolor=lightgray];
     bit2_b [label=1 fillcolor=lightblue];
     bit1_b [label=0 fillcolor=lightgray];
     bit0_b [label=0 fillcolor=lightgray];
     bit7_b [label=0 fillcolor=lightgray];
-    bit6_b [label=1 fillcolor=lightblue];
-    bit5_b [label=1 fillcolor=lightblue];
+    bit6_b [label=0 fillcolor=lightgray];
+    bit5_b [label=0 fillcolor=lightgray];
     bit4_b [label=0 fillcolor=lightgray];
     bit3_b [label=0 fillcolor=lightgray];
     bit2_b [label=1 fillcolor=lightblue];
@@ -50,8 +50,8 @@ strict digraph G {
     { rank=same;
       node [shape=insulator fontsize=50 fontname="times-bold" penwidth=1 margin=0.4 style=filled];
 
-    bit7_output [label=1 fillcolor=lightblue];
-    bit6_output [label=1 fillcolor=lightblue];
+    bit7_output [label=0 fillcolor=lightgray];
+    bit6_output [label=0 fillcolor=lightgray];
     bit5_output [label=0 fillcolor=lightgray];
     bit4_output [label=0 fillcolor=lightgray];
     bit3_output [label=1 fillcolor=lightblue];
@@ -60,8 +60,8 @@ strict digraph G {
     bit0_output [label=0 fillcolor=lightgray];
     }
 
-    bit7_xor2 -> bit7_output [label=1];
-    bit6_xor2 -> bit6_output [label=1];
+    bit7_xor2 -> bit7_output [label=0];
+    bit6_xor2 -> bit6_output [label=0];
     bit5_xor2 -> bit5_output [label=0];
     bit4_xor2 -> bit4_output [label=0];
     bit3_xor2 -> bit3_output [label=1];
@@ -77,8 +77,8 @@ strict digraph G {
     bit1_and2 -> bit1_or1 [label=0];
     bit0_and2 -> bit0_or1 [label=0];
     bit7_and1 -> bit7_or1 [label=0];
-    bit6_and1 -> bit6_or1 [label=1];
-    bit5_and1 -> bit5_or1 [label=1];
+    bit6_and1 -> bit6_or1 [label=0];
+    bit5_and1 -> bit5_or1 [label=0];
     bit4_and1 -> bit4_or1 [label=0];
     bit3_and1 -> bit3_or1 [label=0];
     bit2_and1 -> bit2_or1 [label=1];
@@ -92,8 +92,8 @@ strict digraph G {
     bit2_xor1 -> bit2_and2 [label=0];
     bit1_xor1 -> bit1_and2 [label=0];
     bit0_xor1 -> bit0_and2 [label=0];
-    bit7_carry -> bit7_and2 [label=1];
-    bit6_carry -> bit6_and2 [label=1];
+    bit7_carry -> bit7_and2 [label=0];
+    bit6_carry -> bit6_and2 [label=0];
     bit5_carry -> bit5_and2 [label=0];
     bit4_carry -> bit4_and2 [label=0];
     bit3_carry -> bit3_and2 [label=1];
@@ -101,16 +101,16 @@ strict digraph G {
     bit1_carry -> bit1_and2 [label=0];
     bit0_carry -> bit0_and2 [label=0];
     bit7_b -> bit7_and1 [label=0];
-    bit6_b -> bit6_and1 [label=1];
-    bit5_b -> bit5_and1 [label=1];
+    bit6_b -> bit6_and1 [label=0];
+    bit5_b -> bit5_and1 [label=0];
     bit4_b -> bit4_and1 [label=0];
     bit3_b -> bit3_and1 [label=0];
     bit2_b -> bit2_and1 [label=1];
     bit1_b -> bit1_and1 [label=0];
     bit0_b -> bit0_and1 [label=0];
     bit7_a -> bit7_and1 [label=0];
-    bit6_a -> bit6_and1 [label=1];
-    bit5_a -> bit5_and1 [label=1];
+    bit6_a -> bit6_and1 [label=0];
+    bit5_a -> bit5_and1 [label=0];
     bit4_a -> bit4_and1 [label=0];
     bit3_a -> bit3_and1 [label=0];
     bit2_a -> bit2_and1 [label=1];
@@ -124,8 +124,8 @@ strict digraph G {
     bit2_xor1 -> bit2_xor2 [label=0];
     bit1_xor1 -> bit1_xor2 [label=0];
     bit0_xor1 -> bit0_xor2 [label=0];
-    bit7_carry -> bit7_xor2 [label=1];
-    bit6_carry -> bit6_xor2 [label=1];
+    bit7_carry -> bit7_xor2 [label=0];
+    bit6_carry -> bit6_xor2 [label=0];
     bit5_carry -> bit5_xor2 [label=0];
     bit4_carry -> bit4_xor2 [label=0];
     bit3_carry -> bit3_xor2 [label=1];
@@ -133,24 +133,24 @@ strict digraph G {
     bit1_carry -> bit1_xor2 [label=0];
     bit0_carry -> bit0_xor2 [label=0];
     bit7_b -> bit7_xor1 [label=0];
-    bit6_b -> bit6_xor1 [label=1];
-    bit5_b -> bit5_xor1 [label=1];
+    bit6_b -> bit6_xor1 [label=0];
+    bit5_b -> bit5_xor1 [label=0];
     bit4_b -> bit4_xor1 [label=0];
     bit3_b -> bit3_xor1 [label=0];
     bit2_b -> bit2_xor1 [label=1];
     bit1_b -> bit1_xor1 [label=0];
     bit0_b -> bit0_xor1 [label=0];
     bit7_a -> bit7_xor1 [label=0];
-    bit6_a -> bit6_xor1 [label=1];
-    bit5_a -> bit5_xor1 [label=1];
+    bit6_a -> bit6_xor1 [label=0];
+    bit5_a -> bit5_xor1 [label=0];
     bit4_a -> bit4_xor1 [label=0];
     bit3_a -> bit3_xor1 [label=0];
     bit2_a -> bit2_xor1 [label=1];
     bit1_a -> bit1_xor1 [label=0];
     bit0_a -> bit0_xor1 [label=0];
     bit7_or1 -> bit8_carry [label=0];
-    bit6_or1 -> bit7_carry [label=1];
-    bit5_or1 -> bit6_carry [label=1];
+    bit6_or1 -> bit7_carry [label=0];
+    bit5_or1 -> bit6_carry [label=0];
     bit4_or1 -> bit5_carry [label=0];
     bit3_or1 -> bit4_carry [label=0];
     bit2_or1 -> bit3_carry [label=1];
