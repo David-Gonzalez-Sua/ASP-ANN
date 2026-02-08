@@ -31,11 +31,11 @@ def create_network():
     print("Network built successfully.")
     return network
 
-def load_network(filename):
+def load_model(filename):
     # Load a previously saved model from a file
     print(f"Loading network from {filename}...")
     network = ANN()
-    network.load_model(filename)
+    network.load_network(filename)
     print("Network loaded successfully.")
     return network
 
@@ -71,7 +71,6 @@ def train_network(network, train_images, train_labels, epochs=10, alpha=0.01):
 def test_network(network, test_images, test_labels):
     # Test the ANN on the test data
     print("Testing the network on test data...")
-    testing_amount = 1000  # Number of training samples to use: 0-10000
     correct = 0
     for index in range(testing_amount):
         if index % 100 == 0:
@@ -120,7 +119,7 @@ test_labels_full = np.load("MNIST_Dataset/test_labels.npy")  # Load test labels 
 
 # Create/load ANN
 network = create_network()
-# network = load_network("Adaptive_Network/Python_ANN/python_trained_model.npy")
+# network = load_model("Adaptive_Network/Python_ANN/python_trained_model.npy")
 
 # Set training parameters
 training_amount = 1000  # Number of training samples to use: 0-60000
