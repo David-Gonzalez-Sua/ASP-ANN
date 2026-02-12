@@ -1,16 +1,16 @@
 %% TODO, notes, and ideas for this file:
 % Need to add: biases, activation functions, excitation functions, edge weights, neuron values.
 % 2 options for real number value representation:
-%    1. represent value as a scaled integer in Clingo. 
+%    1. represent value as a scaled integer in Clingo (e.g. 123456 = 0.123456 * 1,000,000). 
 %       Do the dot product in clingo (dividing by the rescale factor in each term)
 %       Use ReLU as the activation function (max(0, x))
 %       Pros: Fully self-contained in Clingo, no need to parse strings back to floats in Python.
 %       Cons: Limited to ReLU activation function, and potential issues with precision and scaling.
-%    2. represent value as a string in Clingo ("0.123456") with 17 decimal places (python's default for floats).
+%    2. represent value as a string in Clingo (e.g. "0.123456") with 17 decimal places (python's default for floats).
 %       Do the dot product in Python (parsing the string back to a float)
 %       Now I can use any activation function (ReLU, sigmoid, etc.)
 %       Pros: More flexible with activation functions, and can leverage Python's handling of floats.
-%       Cons: This is less elegant self-contained. Could introduce performance overhead.
+%       Cons: This is less elegant or self-contained. Could introduce performance overhead.
 
 %%% Network Parameters %%%
 % # Set network parameters
