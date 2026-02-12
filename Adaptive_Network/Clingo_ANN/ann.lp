@@ -1,3 +1,17 @@
+%% TODO, notes, and ideas for this file:
+% Need to add: biases, activation functions, excitation functions, edge weights, neuron values.
+% 2 options for real number value representation:
+%    1. represent value as a scaled integer in Clingo. 
+%       Do the dot product in clingo (dividing by the rescale factor in each term)
+%       Use ReLU as the activation function (max(0, x))
+%       Pros: Fully self-contained in Clingo, no need to parse strings back to floats in Python.
+%       Cons: Limited to ReLU activation function, and potential issues with precision and scaling.
+%    2. represent value as a string in Clingo ("0.123456") with 17 decimal places (python's default for floats).
+%       Do the dot product in Python (parsing the string back to a float)
+%       Now I can use any activation function (ReLU, sigmoid, etc.)
+%       Pros: More flexible with activation functions, and can leverage Python's handling of floats.
+%       Cons: This is less elegant self-contained. Could introduce performance overhead.
+
 %%% Network Parameters %%%
 % # Set network parameters
 % input_size(784).
@@ -12,8 +26,8 @@ output_size(2).
 
 %%% Network Structure %%%
 edge(Source_Layer, Source_Index, Target_Layer, Target_Index) :-
-    neuron(_, Source_Layer, Source_Index),
-    neuron(_, Target_Layer, Target_Index),
+    neuron(_, Source_Layer, Source_Index, _),
+    neuron(_, Target_Layer, Target_Index, _),
     Target_Layer = Source_Layer + 1.
 
 %%% Nueron Parameters %%%
@@ -24,36 +38,42 @@ edge(Source_Layer, Source_Index, Target_Layer, Target_Index) :-
 %index().
 
 %%% Neuron Definitions %%%
-neuron(Type, Layer, Index) :- 
+neuron(Type, Layer, Index, Val) :- 
     Type = input, 
     input_size(I), 
     Layer = 1, 
-    Index = 1..I.
+    Index = 1..I,
+    Val = @random_value().
 
-neuron(Type, Layer, Index) :- 
+neuron(Type, Layer, Index, Val) :- 
     Type = hidden,
     hidden_size(I), 
     num_hidden_layers(N),  
     Layer = 2..N + 1, 
-    Index = 1..I.
+    Index = 1..I,
+    Val = @random_value().
 
-neuron(Type, Layer, Index) :- 
+neuron(Type, Layer, Index, Val) :- 
     Type = output, 
     output_size(I), 
     num_hidden_layers(N),
     Layer = N + 2,
-    Index = 1..I.
+    Index = 1..I,
+    Val = @random_value().
 
+% neuron_value(Layer, Index, Val) :-
+%     neuron(_, Layer, Index),
+%     Val = random_value().
 %neuron(ID, Index, Val) :- neuron_ID(ID), index(Index), outputs(Val).
 %neuron(ID, Index, Val) :- carry_index(Index), outputs(Val), ID = carry.
 
 
-%% Activation Functions
-
 %% Excitation Functions
 
+%% Activation Functions
 
-#show neuron/3.
+
+#show neuron/4.
 #show edge/4.
 
 
@@ -74,3 +94,15 @@ neuron(Type, Layer, Index) :-
 % Layer 5 - Output Layer
 %1 { neuron_output(ID, Index, Val) : neuron(ID, Index, Val) } 1 :- index(Index), ID = output.
 %1 { neuron_carry(ID, Index, Val) : neuron(ID, Index, Val) } 1 :- ID = carry, Index = 8.
+
+#script (python)
+import clingo
+import random
+
+def random_value():
+    # Returns a scaled integer value between 0 and 1 with 6 decimal places. (python stores 17ish though)
+    val = random.random()
+    # return clingo.String(f"{val:.6f}")
+    return clingo.Number(int(val * 1e6))
+
+#end.

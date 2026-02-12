@@ -49,11 +49,16 @@ if toks_next[0].startswith("OPT") or toks_next[0].startswith("SAT"):
             n_type = param[0]
             layer = int(param[1])
             index = int(param[2])
+            val = float(param[3])
 
+            # try:
+            #     layer_nodes[layer] += f'      node_{layer}_{index} [label={n_type}] ;\n'
+            # except KeyError:
+            #     layer_nodes[layer] = '    { rank=same;\n' + f'      node_{layer}_{index} [label={n_type}] ;\n'
             try:
-                layer_nodes[layer] += f'      node_{layer}_{index} [label={n_type}] ;\n'
+                layer_nodes[layer] += f'      {n_type}_{layer}_{index} [label={val}] ;\n'
             except KeyError:
-                layer_nodes[layer] = '    { rank=same;\n' + f'      node_{layer}_{index} [label={n_type}] ;\n'
+                layer_nodes[layer] = '    { rank=same;\n' + f'      {n_type}_{layer}_{index} [label={val}] ;\n'
 
         if t.startswith("edge"):
             line = t[5:-1]
