@@ -16,7 +16,7 @@ save_trained_model_with_params = False
 trained_model_filename = f"Adaptive_Network/Python_ANN/python_trained_model.npy"
 
 print_network_structure = False
-print_network_structure_dot = True
+print_network_structure_dot = False
 
 manual_testing_routine = True
 
@@ -26,12 +26,12 @@ training_amount = 2000  # Number of training samples to use: 0-60000
 test_model = False
 testing_amount = 2000  # Number of testing samples to use: 0-10000
 
-epochs = 15  # Number of epochs to train for
+epochs = 5  # Number of epochs to train for
 alpha = 0.01  # learning rate
 
 # Set network parameters
 input_size = 784  # 28x28 images flattened
-hidden_size = 128  # Number of neurons in each hidden layer
+hidden_size = 128  # Number of neurons in each hidden layer (default = 128)
 num_hidden_layers = 2
 output_size = 10  # Number of output neurons (one for each digit class)
 
