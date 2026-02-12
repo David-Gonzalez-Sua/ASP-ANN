@@ -49,16 +49,20 @@ if toks_next[0].startswith("OPT") or toks_next[0].startswith("SAT"):
             n_type = param[0]
             layer = int(param[1])
             index = int(param[2])
-            val = float(param[3])
+            val = f'{(float(param[3]) / (1e6)):.3f}'
 
             # try:
             #     layer_nodes[layer] += f'      node_{layer}_{index} [label={n_type}] ;\n'
             # except KeyError:
             #     layer_nodes[layer] = '    { rank=same;\n' + f'      node_{layer}_{index} [label={n_type}] ;\n'
+            # try:
+            #     layer_nodes[layer] += f'      {n_type}_{layer}_{index} [label=\'{val}\'] ;\n'
+            # except KeyError:
+            #     layer_nodes[layer] = '    { rank=same;\n' + f'      {n_type}_{layer}_{index} [label=\'{val}\'] ;\n'
             try:
-                layer_nodes[layer] += f'      {n_type}_{layer}_{index} [label={val}] ;\n'
+                layer_nodes[layer] += f'      node_{layer}_{index} [label={val}] ;\n'
             except KeyError:
-                layer_nodes[layer] = '    { rank=same;\n' + f'      {n_type}_{layer}_{index} [label={val}] ;\n'
+                layer_nodes[layer] = '    { rank=same;\n' + f'      node_{layer}_{index} [label={val}] ;\n'
 
         if t.startswith("edge"):
             line = t[5:-1]
@@ -67,8 +71,11 @@ if toks_next[0].startswith("OPT") or toks_next[0].startswith("SAT"):
             source_index = int(param[1])
             target_layer = int(param[2])
             target_index = int(param[3])
+            weight = f'{(float(param[4]) / (1e6)):.3f}'
 
             edge = f'    node_{source_layer}_{source_index} -> node_{target_layer}_{target_index} ;\n'
+            # edge = f'    node_{source_layer}_{source_index} -> node_{target_layer}_{target_index} [label={weight}] ;\n'
+
             edges += edge
 
     my_dict = {k: v + '    }\n\n' for k, v in layer_nodes.items()}

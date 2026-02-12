@@ -1,5 +1,9 @@
 %% TODO, notes, and ideas for this file:
 % Need to add: biases, activation functions, excitation functions, edge weights, neuron values.
+% note: Values for the neurons in terms of excitation and activation functions should go in the definitions for the instance
+% IDEA: Send layer size parameters to Python, treat the values and weights as vectors discontected from the neurons and edges
+%       This would make it less clear that each neuron has its own value and each edge its own weight.
+%       Unsure about the effect on performance.
 % 2 options for real number value representation:
 %    1. represent value as a scaled integer in Clingo (e.g. 123456 = 0.123456 * 1,000,000). 
 %       Do the dot product in clingo (dividing by the rescale factor in each term)
@@ -19,16 +23,22 @@
 % num_hidden_layers(2).
 % output_size(10).
 
-input_size(3).
-hidden_size(5).
+% input_size(3).
+% hidden_size(5).
+% num_hidden_layers(2).
+% output_size(2).
+
+input_size(2).
+hidden_size(3).
 num_hidden_layers(2).
-output_size(2).
+output_size(1).
 
 %%% Network Structure %%%
-edge(Source_Layer, Source_Index, Target_Layer, Target_Index) :-
+edge(Source_Layer, Source_Index, Target_Layer, Target_Index, Weight) :-
     neuron(_, Source_Layer, Source_Index, _),
     neuron(_, Target_Layer, Target_Index, _),
-    Target_Layer = Source_Layer + 1.
+    Target_Layer = Source_Layer + 1,
+    Weight = @random_weight(Source_Layer, Source_Index, Target_Layer, Target_Index).  % Passing in values allows for unique values.
 
 %%% Nueron Parameters %%%
 % TODO: type, value, bias, name
@@ -43,7 +53,7 @@ neuron(Type, Layer, Index, Val) :-
     input_size(I), 
     Layer = 1, 
     Index = 1..I,
-    Val = @random_value().
+    Val = @random_value(Layer, Index).  % Passing in values allows for unique values.
 
 neuron(Type, Layer, Index, Val) :- 
     Type = hidden,
@@ -51,7 +61,7 @@ neuron(Type, Layer, Index, Val) :-
     num_hidden_layers(N),  
     Layer = 2..N + 1, 
     Index = 1..I,
-    Val = @random_value().
+    Val = @random_value(Layer, Index).  % Passing in values allows for unique values
 
 neuron(Type, Layer, Index, Val) :- 
     Type = output, 
@@ -59,7 +69,7 @@ neuron(Type, Layer, Index, Val) :-
     num_hidden_layers(N),
     Layer = N + 2,
     Index = 1..I,
-    Val = @random_value().
+    Val = @random_value(Layer, Index).  % Passing in values allows for unique values
 
 % neuron_value(Layer, Index, Val) :-
 %     neuron(_, Layer, Index),
@@ -74,7 +84,7 @@ neuron(Type, Layer, Index, Val) :-
 
 
 #show neuron/4.
-#show edge/4.
+#show edge/5.
 
 
 
@@ -99,10 +109,15 @@ neuron(Type, Layer, Index, Val) :-
 import clingo
 import random
 
-def random_value():
+def random_value(Layer, Index):
     # Returns a scaled integer value between 0 and 1 with 6 decimal places. (python stores 17ish though)
     val = random.random()
     # return clingo.String(f"{val:.6f}")
+    return clingo.Number(int(val * 1e6))
+
+def random_weight(Source_Layer, Source_Index, Target_Layer, Target_Index):
+    # Generate a single random float as a scaled integer with 6 decimal places.
+    val = random.uniform(-0.5, 0.5)
     return clingo.Number(int(val * 1e6))
 
 #end.
