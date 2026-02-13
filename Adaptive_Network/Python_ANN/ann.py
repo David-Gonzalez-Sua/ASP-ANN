@@ -59,19 +59,17 @@ class ANN:
             print(f'Error in build_network: {e}')
             return 0
 
-    def forward_pass(self, input_data):
+    def forward_pass(self, activation, input_data):
+        # activation is the activation function tag ('SIGMOID', 'ReLU', 'SOFTMAX', 'ReLU_SOFTMAX')
         # input_data is a list of values corresponding to the data for a single image (flattened 28x28 pixel values for MNIST)
         try:
-            # Set input layer values
+            ## Set input layer values
             for i, neuron in enumerate(self.input_layer):
-                neuron.activation_function([input_data[i]], [])
+                neuron.set_value(input_data[i])
 
-            # Forward pass through hidden layers and output layer
-            for index in range(len(self.hidden_layers) + 1):
-                if index == len(self.hidden_layers):
-                    input_layer = self.hidden_layers[index - 1]
-                    layer = self.output_layer
-                elif index == 0:
+            ## Forward pass through the hidden layers
+            for index in range(len(self.hidden_layers)):
+                if index == 0:
                     input_layer = self.input_layer
                     layer = self.hidden_layers[0]
                 else:
@@ -79,55 +77,137 @@ class ANN:
                     layer = self.hidden_layers[index]
 
                 inputs = [neuron.get_value() for neuron in input_layer]
-                for neuron in layer:
-                    weights = []
-                    weights = [self.weights[(input_neuron, neuron)] for input_neuron in input_layer]
-                    neuron.activation_function(inputs, weights)
 
+                # Uses activation tag
+                if activation == 'SIGMOID':
+                    for i, neuron in enumerate(layer):
+                        weights = [self.weights[(input_neuron, neuron)] for input_neuron in input_layer]
+                        excitation = neuron.excitation_function(inputs, weights)
+                        neuron.activation_function(activation, excitation)
+                
+                # Uses 'ReLU' tag
+                elif activation == 'ReLU' or activation == 'ReLU_SOFTMAX':
+                    for i, neuron in enumerate(layer):
+                        weights = [self.weights[(input_neuron, neuron)] for input_neuron in input_layer]
+                        excitation = neuron.excitation_function(inputs, weights)
+                        neuron.activation_function('ReLU', excitation)
+
+                # Uses 'SOFTMAX' tag
+                elif activation == 'SOFTMAX':
+                    excitation = [0] * len(layer)
+
+                    for i, neuron in enumerate(layer):
+                        weights = [self.weights[(input_neuron, neuron)] for input_neuron in input_layer]
+                        excitation[i] = neuron.excitation_function(inputs, weights)
+                    
+                    values = Neuron.softmax(excitation)
+                    for i, neuron in enumerate(layer):
+                        neuron.activation_function('SOFTMAX', values[i])
+
+                else:
+                    raise Exception(f'Activation function {activation} not implemented for hidden layers!')
+
+            ## Forward pass through the output layer
+            input_layer = self.hidden_layers[-1]
+            inputs = [neuron.get_value() for neuron in input_layer]
+
+            # Uses activation tag
+            if activation == 'SIGMOID' or activation == 'ReLU':
+                for i, neuron in enumerate(self.output_layer):
+                    weights = [self.weights[(input_neuron, neuron)] for input_neuron in input_layer]
+                    excitation = neuron.excitation_function(inputs, weights)
+                    neuron.activation_function(activation, excitation)
+            
+            # Uses 'SOFTMAX' tag
+            elif activation == 'SOFTMAX' or activation == 'ReLU_SOFTMAX':
+                excitation = [0] * len(self.output_layer)
+
+                for i, neuron in enumerate(self.output_layer):
+                    weights = [self.weights[(input_neuron, neuron)] for input_neuron in input_layer]
+                    excitation[i] = neuron.excitation_function(inputs, weights)
+                
+                values = Neuron.softmax(excitation)
+                for i, neuron in enumerate(self.output_layer):
+                    neuron.activation_function('SOFTMAX', values[i])
+
+            else:
+                raise Exception(f'Activation function {activation} not implemented for output layer!')
+            
             return 1
         
         except Exception as e:
             print(f'Error in forward_pass: {e}')
             return 0
         
-    def backward_pass(self, target_output, alpha=0.01):
+    def backward_pass(self, loss, activation, target_output, alpha=0.01):
+        # loss is the loss function tag ('MSE', 'CCE')
+        #    note: MSE = Mean Squared Error    CCE = Categorical Cross Entropy
+        # activation is the activation function tag ('SIGMOID', 'ReLU', 'SOFTMAX', 'ReLU_SOFTMAX')
         # target_output is a list of values corresponding to the correct output for the given input data (one-hot encoded vector for MNIST)
         # alpha is the learning rate for weight updates
         # Backpropagation algorithm: Calculates output error, propagates it back through the network, and updates weights accordingly
         # Outputs the MSE for the output layer with original weights and inputs
-        output_MSE = []  # List of tuples (neuron, error) for output layer mean squared error
-        layer_BPE = [[] for _ in range(len(self.hidden_layers) + 1)] # List of lists of tuples (neuron, error) for hidden layer backpropagation error, where layer_BPE[i] is the list of tuples for hidden layer i and layer_BPE[-1] is the list of tuples for the output layer backpropagation error
 
-        # Compute output layer backpropagation error
-        for i, neuron in enumerate(self.output_layer):
-            neuron_error = (1/2) * ( (neuron.get_value() - target_output[i]) ** 2 )  # Mean Squared Error (MSE)
-            output_MSE.append(neuron_error)
+        try:
+            # List of tuples (neuron, error) for output layer mean squared error
+            output_MSE = [] 
+            # List of lists of tuples (neuron, error) for hidden layer backpropagation error, where layer_BPE[i] is the list of tuples for hidden layer i and layer_BPE[-1] is the list of tuples for the output layer backpropagation error
+            layer_BPE = [[] for _ in range(len(self.hidden_layers) + 1)] 
 
-            neuron_BPE = (neuron.get_value() - target_output[i]) * neuron.get_value() * (1 - neuron.get_value())
-            layer_BPE[-1].append((neuron, neuron_BPE))
-    
-        # Comput hidden layer backpropagation error
-        for layer_index in reversed(range(len(self.hidden_layers))):
-            for neuron in self.hidden_layers[layer_index]:
-                weighted_error = 0
-                for next in layer_BPE[layer_index + 1]:
-                    weighted_error += self.weights[(neuron, next[0])] * next[1]
-                neuron_BPE = neuron.get_value() * (1 - neuron.get_value()) * weighted_error
-                layer_BPE[layer_index].append((neuron, neuron_BPE))
+            # Compute output layer backpropagation error
+            for i, neuron in enumerate(self.output_layer):
+                neuron_error = (1/2) * ( (neuron.get_value() - target_output[i]) ** 2 )  # Mean Squared Error (MSE)
+                output_MSE.append(neuron_error)
 
-        # Update output edge weights and neuron bias based on backpropagation error
-        for layer_index in reversed(range(len(layer_BPE))):
-            for neuron, error in layer_BPE[layer_index]:
-                neuron.bias = neuron.bias - alpha * error
-                if layer_index == 0:
-                    input_layer = self.input_layer
+                y = neuron.get_value()
+                t = target_output[i]
+                if loss == 'MSE' and activation == 'SIGMOID':
+                    neuron_BPE = (y - t) * Neuron.sigmoid_derivative(y)
+                
+                elif loss == 'CCE' and (activation == 'SOFTMAX' or activation == 'ReLU_SOFTMAX'):
+                    neuron_BPE = y - t
+                
                 else:
-                    input_layer = self.hidden_layers[layer_index - 1]
+                    raise Exception(f'Loss ({loss}) and activation ({activation}) function combo not implemented for output layer!')
+                
+                layer_BPE[-1].append((neuron, neuron_BPE))
+        
+            # Comput hidden layer backpropagation error
+            for layer_index in reversed(range(len(self.hidden_layers))):
+                for neuron in self.hidden_layers[layer_index]:
+                    weighted_error = 0
+                    for next in layer_BPE[layer_index + 1]:
+                        weighted_error += self.weights[(neuron, next[0])] * next[1]
+                    
+                    z = neuron.get_value()
+                    if activation == 'SIGMOID':
+                        neuron_BPE = weighted_error * Neuron.sigmoid_derivative(z)
 
-                for input_neuron in input_layer:
-                    self.weights[(input_neuron, neuron)] = self.weights[(input_neuron, neuron)] - alpha * error * input_neuron.get_value()
+                    elif activation == 'ReLU' or activation == 'ReLU_SOFTMAX':
+                        neuron_BPE = weighted_error * Neuron.relu_derivative(z)
 
-        return sum(output_MSE) / len(output_MSE)  # Return the average MSE for the output layer for this training example
+                    else:
+                        raise Exception(f'Activation function {activation} not implemented for hidden layers!')
+                    
+                    layer_BPE[layer_index].append((neuron, neuron_BPE))
+
+            # Update output edge weights and neuron bias based on backpropagation error
+            for layer_index in reversed(range(len(layer_BPE))):
+                for neuron, error in layer_BPE[layer_index]:
+                    neuron.bias = neuron.bias - alpha * error
+                    if layer_index == 0:
+                        input_layer = self.input_layer
+                    else:
+                        input_layer = self.hidden_layers[layer_index - 1]
+
+                    for input_neuron in input_layer:
+                        self.weights[(input_neuron, neuron)] = self.weights[(input_neuron, neuron)] - alpha * error * input_neuron.get_value()
+
+            return sum(output_MSE) / len(output_MSE)  # Return the average MSE for the output layer for this training example
+        
+        except Exception as e:
+            print(f'Error in backward_pass: {e}')
+            return 0
 
     @staticmethod
     def print_network_dot(network):

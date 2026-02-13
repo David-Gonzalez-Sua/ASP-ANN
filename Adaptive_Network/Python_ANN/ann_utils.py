@@ -20,7 +20,7 @@ def load_model(filename):
     print("Network loaded successfully.")
     return network
 
-def train_network(network, train_images, train_labels, epochs=10, alpha=0.01):
+def train_network(network, loss, activation, train_images, train_labels, epochs=10, alpha=0.01):
     # Train the ANN on the training data
     print("Starting training with epochs = {}, alpha = {}...".format(epochs, alpha))
     for epoch in range(epochs):
@@ -37,10 +37,10 @@ def train_network(network, train_images, train_labels, epochs=10, alpha=0.01):
             y_label_vector[y_label] = 1  # One-hot encode the label
 
             # Forward pass
-            network.forward_pass(x_image)
+            network.forward_pass(activation, x_image)
             
             # Backward pass / weight update
-            network.backward_pass(y_label_vector, alpha)
+            network.backward_pass(loss, activation, y_label_vector, alpha)
             
             # Compute squared error for monitoring
             output_values = [neuron.value for neuron in network.output_layer]
@@ -49,7 +49,7 @@ def train_network(network, train_images, train_labels, epochs=10, alpha=0.01):
         print(f"Epoch {epoch}, total training error: {total_error:.4f}")
     print("Training completed.")
 
-def test_network(network, test_images, test_labels):
+def test_network(network, activation, test_images, test_labels):
     # Test the ANN on the test data
     print("Testing the network on test data...")
     correct = 0
@@ -64,7 +64,10 @@ def test_network(network, test_images, test_labels):
         y_label_vector = np.zeros(10)  # Target vector
         y_label_vector[y_label] = 1  # One-hot encode the label
 
-        network.forward_pass(x_image)
+        # Forward pass
+        network.forward_pass(activation, x_image)
+        
+        # Extract output
         predicted = np.array([neuron.value for neuron in network.output_layer])
         
         # Binary classification: round to 0 or 1
