@@ -12,22 +12,6 @@ class Neuron:
         
         # self.activated = False  # Is this necessary anymore? Maybe for debugging purposes to see if a neuron has been activated or not. Could also be used to implement a learning algorithm where only activated neurons have their weights updated.
 
-    # def excitation_function_input(self, input):  # Use circuit model to create a function that will learn the correct weights to perform digit classification on the MNIST dataset        
-    #     # input is a single value 
-    #     try:
-    #         self.activated  = True
-            
-    #         if self.neuron_type == 'INPUT':
-    #             return input
-            
-    #         else:
-    #             print('No operation specified for non-INPUT neuron type in excitation_function.')
-    #             return 0
-
-    #     except Exception as e: 
-    #         print(f'Error in excitation_function for {self.neuron_type} neuron: {e}')
-    #         return 0
-
     def excitation_function(self, inputs, weights):  # Use circuit model to create a function that will learn the correct weights to perform digit classification on the MNIST dataset        
         # inputs is a list of input values [x1, x2, x3, ...]
         # weights is a list of a list of weights corresponding to the input values, where weights[i] are the weights for input i

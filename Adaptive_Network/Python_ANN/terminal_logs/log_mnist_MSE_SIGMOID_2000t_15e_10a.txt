@@ -1,0 +1,39 @@
+Loading network from Adaptive_Network/Python_ANN/trained_models/ptm_2000_15e_10a.npy...
+Network loaded successfully.
+Network properties:
+    Input layer size = 784
+    Hidden layers = 2
+    Hidden layer size = 128
+    Output layer size = 10
+
+Testing parameters:
+    Activation function = SIGMOID
+
+Testing the network on test data...
+Testing sample 0/1000...
+Testing sample 100/1000...
+Traceback (most recent call last):
+  File "c:\Users\dgjsu\Documents\GitHub\ASP-ANN\Adaptive_Network\Python_ANN\ZZ_Model_Testing_Copy copy.py", line 92, in <module>
+    utils.test_network(network, activation, test_images, test_labels)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\dgjsu\Documents\GitHub\ASP-ANN\Adaptive_Network\Python_ANN\ann_utils.py", line 139, in test_network
+    network.forward_pass(activation, x_image)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\dgjsu\Documents\GitHub\ASP-ANN\Adaptive_Network\Python_ANN\ann.py", line 84, in forward_pass
+    weights = [self.weights[(input_neuron, neuron)] for input_neuron in input_layer]
+               ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+Loading network from Adaptive_Network/Python_ANN/trained_models/ptm_2000_15e_10a.npy...
+Network loaded successfully.
+Network properties:
+    Input layer size = 784
+    Hidden layers = 2
+    Hidden layer size = 128
+    Output layer size = 10
+
+
+ANN Manager program end.
+Total elapsed time:
+Wall-clock time: 0.439513999997871 seconds
+CPU time: 0.390625 seconds
+

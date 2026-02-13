@@ -162,7 +162,7 @@ def test_network(network, activation, test_images, test_labels):
         print(f"Error testing network: {e}")
         return 0
 
-def test_single_image(network, test_images, test_labels, index=0):
+def test_single_image(network, activation, test_images, test_labels, index=0):
     try:
         print("\nTesting single image from test set...")
         print(f"    Image Index: {index}")
@@ -176,7 +176,7 @@ def test_single_image(network, test_images, test_labels, index=0):
         start_time = time.perf_counter()
         start_cpu = time.process_time()
 
-        network.forward_pass(test_images[index].flatten() / 255.0)
+        network.forward_pass(activation, test_images[index].flatten() / 255.0)
         predicted = np.array([neuron.value for neuron in network.output_layer])
         predicted_label = np.argmax(predicted)
 

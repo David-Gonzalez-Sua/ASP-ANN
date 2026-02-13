@@ -1,7 +1,7 @@
 # ANN Manager
 # This file manages the overall process of creating, training, and testing the ANN.
 # Use the following to visualize the network
-# dot -T pdf 'Adaptive_Network/Python_ANN/network_structure.dot' -o '.\Adaptive_Network\Python_ANN\network_visualizer.pdf'
+# dot -T pdf '.\Adaptive_Network\Python_ANN\graphs\simple_network_structure.dot' -o '.\Adaptive_Network\Python_ANN\graphs\network_visualizer.pdf'
 
 import sys
 import time
@@ -13,8 +13,8 @@ import ann_utils as utils
 
 # Options
 load_existing_model = False  # Creates new network if False
-existing_model_filename = "Adaptive_Network/Python_ANN/default_trained_model.npy"  # Default
-# existing_model_filename = "Adaptive_Network/Python_ANN/trained_models/ptm_2000_15e_10a.npy"
+existing_model_filename = "ptm_default.npy"  # Default
+# existing_model_filename = "ptm_mnist_MSE_SIGMOID_2000t_15e_10a.npy"
 # existing_model_filename = "ptm_mnist_CCE_ReLU_SOFTMAX_6000t_20e_10a.npy"
 
 save_trained_model_default = False
@@ -61,7 +61,7 @@ start_cpu = time.process_time()
 
 # Save terminal log
 if save_terminal_log_default:
-    sys.stdout = utils.Logger("Adaptive_Network/Python_ANN/default_terminal_log.txt")
+    sys.stdout = utils.Logger("Adaptive_Network/Python_ANN/terminal_logs/default_terminal_log.txt")
 if save_terminal_log_with_params:
     sys.stdout = utils.Logger(f"Adaptive_Network/Python_ANN/terminal_logs/log_mnist_{loss}_{activation}_{training_amount}t_{epochs}e_{int(1000*alpha)}a.txt")
 sys.stderr = sys.stdout  # Optionally redirect stderr
@@ -75,7 +75,7 @@ test_images, test_labels = data_test
 
 # Create/load ANN
 if load_existing_model:
-    network = utils.load_model(existing_model_filename)
+    network = utils.load_model(f"Adaptive_Network/Python_ANN/trained_models/{existing_model_filename}")
 else:
     network = utils.create_network(input_size, num_hidden_layers, hidden_size, output_size)
 
@@ -93,7 +93,7 @@ if test_model:
 
 # Saving the trained model
 if save_trained_model_default:
-    network.save_network("Adaptive_Network/Python_ANN/ptm_default.npy")
+    network.save_network("Adaptive_Network/Python_ANN/trained_models/ptm_default.npy")
 if save_trained_model_with_params:
     network.save_network(f"Adaptive_Network/Python_ANN/trained_models/ptm_mnist_{loss}_{activation}_{training_amount}t_{epochs}e_{int(1000*alpha)}a.npy")
 
@@ -103,7 +103,7 @@ if print_network_structure_list:
 if create_network_structure_dot:
     # Save the dot code to a file
     dot_code = utils.visualize_network(network)
-    with open("Adaptive_Network/Python_ANN/network_structure.dot", "w") as f:
+    with open(f"Adaptive_Network/Python_ANN/graphs/netstruc_{input_size}in_{num_hidden_layers}lay_{hidden_size}hid_{output_size}out.dot", "w") as f:
         f.write(dot_code)
     # print(utils.visualize_network(network))
 
@@ -120,8 +120,8 @@ print(f"CPU time: {end_cpu - start_cpu} seconds\n")
 if manual_testing_routine:
     print("Beginning manual testing routine...\n")
     while True:
-        index = int(input("Enter an index from 0 to 10000 to test a single image (or -1 to exit): "))
+        index = int(input("Enter an index from 0 to 9999 to test a single image (or -1 to exit): "))
         if index == -1:
             break
-        utils.test_single_image(network, test_images, test_labels, index)
+        utils.test_single_image(network, activation, test_images, test_labels, index)
     print("Manual testing routine end.\n")
