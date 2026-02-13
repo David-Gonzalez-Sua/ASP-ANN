@@ -12,7 +12,7 @@ import ann_utils as utils
 #### ----------------------------------- CONFIG ---------------------------------------- ####
 
 # Options
-load_existing_model = True  # Creates new network if False
+load_existing_model = False  # Creates new network if False
 existing_model_filename = "Adaptive_Network/Python_ANN/default_trained_model.npy"  # Default
 # existing_model_filename = "Adaptive_Network/Python_ANN/trained_models/ptm_2000_15e_10a.npy"
 # existing_model_filename = "ptm_mnist_CCE_ReLU_SOFTMAX_6000t_20e_10a.npy"
@@ -24,19 +24,19 @@ save_terminal_log_default = True
 save_terminal_log_with_params = False  # Only one of these should be true
 
 print_network_structure_list = False
-create_network_structure_dot = False
+create_network_structure_dot = True
 
 manual_testing_routine = True
 
 # Set training parameters
-train_model = False
-training_amount = 6000  # Number of training samples to use: 0-60000
+train_model = True
+training_amount = 1000  # Number of training samples to use: 0-60000
 
-epochs = 20  # Number of epochs to train for
+epochs = 3  # Number of epochs to train for
 alpha = 0.01  # learning rate
 
 # Set testing parameters
-test_model = False
+test_model = True
 testing_amount = 1000  # Number of testing samples to use: 0-10000
 
 # Set network parameters
@@ -97,7 +97,7 @@ if save_trained_model_default:
 if save_trained_model_with_params:
     network.save_network(f"Adaptive_Network/Python_ANN/trained_models/ptm_mnist_{loss}_{activation}_{training_amount}t_{epochs}e_{int(1000*alpha)}a.npy")
 
-# Print network structure
+# Visualize network structure
 if print_network_structure_list:
     print(utils.list_network(network))
 if create_network_structure_dot:
