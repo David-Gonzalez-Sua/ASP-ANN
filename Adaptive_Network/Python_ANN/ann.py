@@ -284,7 +284,7 @@ digraph G {
         # Load the network's structure and weights from a file
         network_state = np.load(filename, allow_pickle=True).item()
         # Reconstruct neurons and layers based on saved state
-        # This is a placeholder implementation and may need adjustments based on how you want to handle neuron references and connections
+        # This is a placeholder implementation and may need adjustments based on how to handle neuron references and connections
         self.input_layer = [Neuron(**neuron_data) for neuron_data in network_state['input_layer']]
         self.hidden_layers = [[Neuron(**neuron_data) for neuron_data in layer] for layer in network_state['hidden_layers']]
         self.output_layer = [Neuron(**neuron_data) for neuron_data in network_state['output_layer']]
