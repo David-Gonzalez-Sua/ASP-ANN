@@ -36,6 +36,7 @@ digraph G {
     // Align all inputs from a given layer
 """
 layer_nodes = {}
+bias_nodes = {}
 edges = ''
 
 if toks_next[0].startswith("OPT") or toks_next[0].startswith("SAT"):
@@ -59,10 +60,27 @@ if toks_next[0].startswith("OPT") or toks_next[0].startswith("SAT"):
             #     layer_nodes[layer] += f'      {n_type}_{layer}_{index} [label=\'{val}\'] ;\n'
             # except KeyError:
             #     layer_nodes[layer] = '    { rank=same;\n' + f'      {n_type}_{layer}_{index} [label=\'{val}\'] ;\n'
+
+            # if n_type == 'bias':
+            #     try:
+            #         layer_nodes[layer] += f'      node_{layer}_{index} [label={val}, rank=max] ;\n'
+            #     except KeyError:
+            #         layer_nodes[layer] = '    { rank=same;\n' + f'      node_{layer}_{index} [label={val}, rank=max] ;\n'
+            
             try:
-                layer_nodes[layer] += f'      node_{layer}_{index} [label={val}] ;\n'
+                if n_type == 'bias':
+                    bias_nodes[layer] = f"      node_{layer}_{index} [label={val}, color=yellow] ;\n"
+                else:
+                    layer_nodes[layer] += f"      node_{layer}_{index} [label={val}] ;\n"
             except KeyError:
-                layer_nodes[layer] = '    { rank=same;\n' + f'      node_{layer}_{index} [label={val}] ;\n'
+                if n_type == 'input':
+                    layer_nodes[layer] = "    { rank=same; node [color=green];\n" + f"      node_{layer}_{index} [label={val}] ;\n"
+                elif n_type == 'hidden':
+                    layer_nodes[layer] = "    { rank=same; node [color=red];\n" + f"      node_{layer}_{index} [label={val}] ;\n"
+                elif n_type == 'output':
+                    layer_nodes[layer] = "    { rank=same; node [color=blue];\n" + f"      node_{layer}_{index} [label={val}] ;\n"
+                else:
+                    layer_nodes[layer] = "    { rank=same;\n" + f"      node_{layer}_{index} [label={val}] ;\n"
 
         if t.startswith("edge"):
             line = t[5:-1]
@@ -78,9 +96,10 @@ if toks_next[0].startswith("OPT") or toks_next[0].startswith("SAT"):
 
             edges += edge
 
-    my_dict = {k: v + '    }\n\n' for k, v in layer_nodes.items()}
+    layer_nodes.update({k: layer_nodes[k] + v for k, v in bias_nodes.items()})
+    full_layers = {k: v + '    }\n\n' for k, v in layer_nodes.items()}
 
-    output += ''.join(my_dict.values()) + edges + "\n} // Graph"
+    output += ''.join(full_layers.values()) + edges + "\n} // Graph"
     print(output + "\n")
 
 # In case of unsatisfiability

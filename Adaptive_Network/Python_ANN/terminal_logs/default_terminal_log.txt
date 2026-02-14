@@ -211,3 +211,37 @@ Testing single image from test set...
 Error testing single image: index 10000 is out of bounds for axis 0 with size 10000
 Enter an index from 0 to 10000 to test a single image (or -1 to exit): Manual testing routine end.
 
+Network properties:
+    Input layer size = 784
+    Hidden layers = 2
+    Hidden layer size = 128
+    Output layer size = 10
+Building network...
+Network built successfully.
+Wall-clock time: 0.7499536999966949 seconds
+CPU time: 0.65625 seconds
+
+Training parameters:
+    Loss fucnction = CCE
+    Activation function = ReLU_SOFTMAX
+    Epochs = 3
+    Alpha = 0.01
+
+Starting training...
+Epoch 0, training sample 0/1000...
+Epoch 0, training sample 100/1000...
+Epoch 0, training sample 200/1000...
+Traceback (most recent call last):
+  File "c:\Users\dgjsu\Documents\GitHub\ASP-ANN\Adaptive_Network\Python_ANN\ZZ_Model_Testing_Copy.py", line 86, in <module>
+    utils.train_network(network, loss, activation, train_images, train_labels, epochs, alpha)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\dgjsu\Documents\GitHub\ASP-ANN\Adaptive_Network\Python_ANN\ann_utils.py", line 90, in train_network
+    network.forward_pass(activation, x_image)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\dgjsu\Documents\GitHub\ASP-ANN\Adaptive_Network\Python_ANN\ann.py", line 91, in forward_pass
+    weights = [self.weights[(input_neuron, neuron)] for input_neuron in input_layer]
+               ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\dgjsu\Documents\GitHub\ASP-ANN\Adaptive_Network\Python_ANN\neuron.py", line 95, in __hash__
+    def __hash__(self):
+    
+KeyboardInterrupt

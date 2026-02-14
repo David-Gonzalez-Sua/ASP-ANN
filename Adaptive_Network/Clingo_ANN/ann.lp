@@ -1,3 +1,6 @@
+%% To visualize graph:
+%% clingo .\Adaptive_Network\Clingo_ANN\ann.lp | python .\Adaptive_Network\Clingo_ANN\graph_visualizer.py | dot -T pdf -o '.\Adaptive_Network\Clingo_ANN\network_visualizer.pdf'
+%%
 %% TODO, notes, and ideas for this file:
 % Need to add: biases, activation functions, excitation functions, edge weights, neuron values.
 % note: Values for the neurons in terms of excitation and activation functions should go in the definitions for the instance
@@ -34,11 +37,17 @@ num_hidden_layers(2).
 output_size(1).
 
 %%% Network Structure %%%
+% edge(Source_Layer, Source_Index, Target_Layer, Target_Index, Weight) :-
+%     neuron(_, Source_Layer, Source_Index, _, _),
+%     neuron(_, Target_Layer, Target_Index, _, _),
+%     Target_Layer = Source_Layer + 1,
+%     Weight = @random_weight(Source_Layer, Source_Index, Target_Layer, Target_Index).  % Passing in args allows for unique values.
+
 edge(Source_Layer, Source_Index, Target_Layer, Target_Index, Weight) :-
     neuron(_, Source_Layer, Source_Index, _),
     neuron(_, Target_Layer, Target_Index, _),
     Target_Layer = Source_Layer + 1,
-    Weight = @random_weight(Source_Layer, Source_Index, Target_Layer, Target_Index).  % Passing in values allows for unique values.
+    Weight = @random_weight(Source_Layer, Source_Index, Target_Layer, Target_Index).  % Passing in args allows for unique values.
 
 %%% Nueron Parameters %%%
 % TODO: type, value, bias, name
@@ -48,28 +57,167 @@ edge(Source_Layer, Source_Index, Target_Layer, Target_Index, Weight) :-
 %index().
 
 %%% Neuron Definitions %%%
-neuron(Type, Layer, Index, Val) :- 
+neuron(Type, Layer, Index) :- 
     Type = input, 
     input_size(I), 
     Layer = 1, 
-    Index = 1..I,
-    Val = @random_value(Layer, Index).  % Passing in values allows for unique values.
+    Index = 1..I.
 
-neuron(Type, Layer, Index, Val) :- 
-    Type = hidden,
+neuron(Type, Layer, Index) :- 
+    Type = hidden, 
     hidden_size(I), 
     num_hidden_layers(N),  
     Layer = 2..N + 1, 
-    Index = 1..I,
-    Val = @random_value(Layer, Index).  % Passing in values allows for unique values
+    Index = 1..I.
 
-neuron(Type, Layer, Index, Val) :- 
+neuron(Type, Layer, Index) :- 
     Type = output, 
     output_size(I), 
     num_hidden_layers(N),
     Layer = N + 2,
-    Index = 1..I,
-    Val = @random_value(Layer, Index).  % Passing in values allows for unique values
+    Index = 1..I.
+
+% BIAS NEURON for input layer
+neuron(Type, Layer, Index, -1000000) :-
+    Type = bias,
+    input_size(I),
+    Layer = 1,
+    Index = I + 1.
+
+% BIAS NEURON for hidden layers
+neuron(Type, Layer, Index, -1000000) :-
+    Type = bias,
+    hidden_size(I), 
+    num_hidden_layers(N),  
+    Layer = 2..N + 1,
+    Index = I + 1.
+
+neuron(Type, 1, Index, Val) :-  % Initializes inupt neurons with random values    TEMPORARY
+    neuron(Type, 1, Index),
+    Type = input,
+    Val = @random_value(1, Index).  % Passing in args allows for unique values.
+
+neuron(Type, Layer, Index, Val) :-  % Excitation of first hidden layer
+    neuron(Type, Layer, Index),
+    Type != input,
+    excitation(_, _, Layer, Index, Val).
+
+% neuron(Type, Layer, Index, Exc) :-  % Excitation of every other hidden layer and output layer
+%     neuron(Type, Layer, Index),
+%     hidden_size(I),
+%     Layer > 2,
+%     Source_Layer = Layer - 1,
+%     Source_Index = 1..I,
+%     Exc = #sum { ((V * W) / 1000000) : neuron(_, Source_Layer, Source_Index, V), edge(Source_Layer, Source_Index, Layer, Index, W) }.  % Excitation function
+
+% Input -> Hidden excitation
+excitation(Source_Layer, Source_Size, Target_Layer, Target_Index, Exc) :-
+    neuron(_, Target_Layer, Target_Index),
+    input_size(Source_Size),
+    hidden_size(I),
+    Target_Layer = 2,
+    Source_Layer = 1,
+    Source_Index = 1..Source_Size + 1,
+    Exc = #sum { ((V * W) / 1000000) : neuron(_, Source_Layer, Source_Index, V), edge(Source_Layer, Source_Index, Target_Layer, Target_Index, W) }.
+
+% Hidden -> Hidden/Output excitation
+excitation(Source_Layer, Source_Size, Target_Layer, Target_Index, Exc) :-
+    neuron(_, Target_Layer, Target_Index),
+    num_hidden_layers(N),
+    hidden_size(Source_Size),
+    Target_Layer = 3..N + 2,
+    Source_Layer = Target_Layer - 1,
+    Source_Index = 1..Source_Size + 1,
+    Exc = #sum { ((V * W) / 1000000) : neuron(_, Source_Layer, Source_Index, V), edge(Source_Layer, Source_Index, Target_Layer, Target_Index, W) }.
+
+% Hidden -> Output excitation
+% excitation(Source_Layer, Source_Size, Target_Layer, Target_Index, Exc) :-
+%     neuron(_, Target_Layer, Target_Index),
+%     num_hidden_layers(N),
+%     hidden_size(HidSize),
+%     output_size(OutSize),
+%     Target_Layer = N + 2,
+%     Target_Index = 1..OutSize,
+%     Source_Layer = Target_Layer - 1,
+%     Source_Index = 1..HidSize,
+%     Exc = #sum { ((V * W) / 1000000) : neuron(_, Source_Layer, Source_Index, V), edge(Source_Layer, Source_Index, Layer, Index, W) }.
+
+% neuron(Type, Layer, Index, Val) :-
+%     neuron(Type, Layer, Index),
+%     Type != input,
+%     Source_Layer = Layer - 1,
+%     Source_Index = 1..I,
+%     S = #sum { ((V * W) / 1000000) : neuron(_, Source_Layer, Source_Index, _, V), edge(Source_Layer, Source_Index, Layer, Index, W) },
+%     Val = S + Bias.  % Excitation function
+
+% excitation(Layer, Index, Val) :-
+%     neuron(_, Layer, Index, Val, Bias),
+%     hidden_size(I),
+%     Source_Layer = Layer - 1,
+%     Source_Index = 1..I,
+%     S = #sum { ((V * W) / 1000000) : neuron(_, Source_Layer, Source_Index, _, V), edge(Source_Layer, Source_Index, Layer, Index, W) },
+%     Val = S + Bias.
+
+% neuron(Type, Layer, Index, Val, Bias) :- 
+%     Type = input, 
+%     input_size(I), 
+%     Layer = 1, 
+%     Index = 1..I,
+%     Val = @random_value(Layer, Index),  % Passing in args allows for unique values.
+%     Bias = 0.
+
+% neuron(Type, Layer, Index, Val) :- 
+%     Type = hidden,
+%     hidden_size(I), 
+%     num_hidden_layers(N),  
+%     Layer = 2..N + 1, 
+%     Index = 1..I,
+%     Val = @random_value(Layer, Index).  % Passing in args allows for unique values
+
+% neuron(Type, Layer, Index, Val) :- 
+%     Type = output, 
+%     output_size(I), 
+%     num_hidden_layers(N),
+%     Layer = N + 2,
+%     Index = 1..I,
+%     Val = @random_value(Layer, Index).  % Passing in args allows for unique values
+
+% neuron(Type, Layer, Index, Val, Bias) :-
+%     neuron(Type, Layer, Index),
+%     Type = input,
+%     Val = excitation(Layer, Index, Val),
+%     Bias = 0.
+
+% neuron(Type, Layer, Index, Val, Bias) :-
+%     neuron(Type, Layer, Index),
+%     Type = input,
+%     excitation(Layer, Index, Val),
+%     Bias = 0.
+
+% neuron(Type, Layer, Index, Val, Bias) :- 
+%     Type = hidden,
+%     hidden_size(I), 
+%     num_hidden_layers(N),  
+%     Layer = 2..N + 1, 
+%     Index = 1..I,
+%     excitation(Layer, Index, Val),
+%     % Val = 0,
+%     Bias = 0.
+
+% neuron(Type, Layer, Index, Val, Bias) :- 
+%     Type = output, 
+%     output_size(I), 
+%     num_hidden_layers(N),
+%     Layer = N + 2,
+%     Index = 1..I,
+%     excitation(Layer, Index, Val),
+%     % Val = 0,
+%     Bias = 0.
+
+% Forces on neuron per node, and can be used in other functions
+% 1 { neuron(Type, Layer, Index) } 1 :- 
+%     Type = input,
+
 
 % neuron_value(Layer, Index, Val) :-
 %     neuron(_, Layer, Index),
@@ -83,9 +231,11 @@ neuron(Type, Layer, Index, Val) :-
 %% Activation Functions
 
 
+% #show neuron/3.
 #show neuron/4.
+% #show neuron/5.
 #show edge/5.
-
+% #show excitation/3.
 
 
 %% Forces one output value per neuron
@@ -111,7 +261,7 @@ import random
 
 def random_value(Layer, Index):
     # Returns a scaled integer value between 0 and 1 with 6 decimal places. (python stores 17ish though)
-    val = random.random()
+    val = random.uniform(0, 10)
     # return clingo.String(f"{val:.6f}")
     return clingo.Number(int(val * 1e6))
 
