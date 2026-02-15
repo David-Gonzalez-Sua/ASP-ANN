@@ -74,6 +74,9 @@ def train_network(network, loss, activation, train_images, train_labels, epochs=
         start_cpu = time.process_time()
 
         for epoch in range(epochs):
+            epoch_time = time.perf_counter()
+            epoch_cpu = time.process_time()
+
             total_error = 0
             for index in range(len(train_images)):
                 if index % 100 == 0:
@@ -96,7 +99,14 @@ def train_network(network, loss, activation, train_images, train_labels, epochs=
                 output_values = [neuron.value for neuron in network.output_layer]
                 sample_error = 0.5 * np.sum((np.array(output_values) - y_label_vector) ** 2)
                 total_error += sample_error
-            print(f"Epoch {epoch}, total training error: {total_error:.4f}\n")
+
+            epoch_end_time = time.perf_counter()
+            epoch_end_cpu = time.perf_counter()
+            remaining_time = (epoch_time - epoch_end_time) * (epochs - epoch - 1)
+            print(f"Epoch {epoch}, total training error: {total_error:.4f}")
+            print(f"Epoch wall-clock time: {epoch_time - epoch_end_time} seconds")
+            print(f"Epoch CPU time: {epoch_cpu - epoch_end_cpu} seconds")
+            print(f"Estimated time remaining: {remaining_time} seconds -> {remaining_time / 60} minutes -> {remaining_time / 3600} hours\n")
 
         end_time = time.perf_counter()
         end_cpu = time.process_time()
@@ -152,7 +162,7 @@ def test_network(network, activation, test_images, test_labels):
         end_cpu = time.process_time()
 
         print("Testing completed.")
-        print(f"Test accuracy: {accuracy*100:.2f}%\n")
+        print(f"Test accuracy: {accuracy*100:.2f}%")
         print(f"Wall-clock time: {end_time - start_time} seconds")
         print(f"CPU time: {end_cpu - start_cpu} seconds\n")
 

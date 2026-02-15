@@ -16,6 +16,7 @@ load_existing_model = True  # Creates new network if False
 existing_model_filename = "ptm_default.npy"  # Default
 # existing_model_filename = "ptm_mnist_MSE_SIGMOID_2000t_15e_10a.npy"
 # existing_model_filename = "ptm_mnist_CCE_ReLU_SOFTMAX_6000t_20e_10a.npy"
+# existing_model_filename = "ptm_mnist_CCE_ReLU_SOFTMAX_6000t_25e_1a.npy"
 
 save_trained_model_default = False
 save_trained_model_with_params = False  # Both can be true
@@ -32,8 +33,8 @@ manual_testing_routine = True
 train_model = False
 training_amount = 6000  # Number of training samples to use: 0-60000
 
-epochs = 20  # Number of epochs to train for
-alpha = 0.01  # learning rate
+epochs = 25  # Number of epochs to train for
+alpha = 0.001  # learning rate
 
 # Set testing parameters
 test_model = False
@@ -68,8 +69,6 @@ sys.stderr = sys.stdout  # Optionally redirect stderr
 
 # Load the dataset
 data_train, data_test = utils.load_dataset()
-# train_images, train_labels = data_train[:training_amount]
-# test_images, test_labels = data_test[:testing_amount]
 train_images, train_labels = data_train
 test_images, test_labels = data_test
 
@@ -123,5 +122,5 @@ if manual_testing_routine:
         index = int(input("Enter an index from 0 to 9999 to test a single image (or -1 to exit): "))
         if index == -1:
             break
-        utils.test_single_image(network, activation, test_images, test_labels, index)
+        utils.test_single_image(network, activation, data_test[0], data_test[1], index)
     print("Manual testing routine end.\n")

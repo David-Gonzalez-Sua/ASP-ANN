@@ -266,7 +266,7 @@ digraph G {
         # Print adjacency list representation of the network
         output = ''
         for node in network.edges:
-            output += f"{node.name} -> {', '.join(map(str, [n.name for n in network.edges[node]]))}\n"
+            output += f"{node.name} -> {', '.join(map(str, [n.name for n in network.edges[node]]))}\n\n"
         return output
     
     def save_network(self, filename):
