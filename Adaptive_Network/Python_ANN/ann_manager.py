@@ -17,11 +17,12 @@ existing_model_filename = "ptm_default.npy"  # Default
 # existing_model_filename = "ptm_mnist_MSE_SIGMOID_2000t_15e_10a.npy"
 # existing_model_filename = "ptm_mnist_CCE_ReLU_SOFTMAX_6000t_20e_10a.npy"
 # existing_model_filename = "ptm_mnist_CCE_ReLU_SOFTMAX_6000t_25e_1a.npy"
+# existing_model_filename = "ptm_mnist_CCE_ReLU_SOFTMAX_12000t_20e_1a.npy"
 
 save_trained_model_default = False
 save_trained_model_with_params = False  # Both can be true
 
-save_terminal_log_default = True
+save_terminal_log_default = False
 save_terminal_log_with_params = False  # Only one of these should be true
 
 print_network_structure_list = False
@@ -31,14 +32,14 @@ manual_testing_routine = True
 
 # Set training parameters
 train_model = False
-training_amount = 6000  # Number of training samples to use: 0-60000
+training_amount = 12000  # Number of training samples to use: 0-60000
 
-epochs = 25  # Number of epochs to train for
+epochs = 20  # Number of epochs to train for
 alpha = 0.001  # learning rate
 
 # Set testing parameters
 test_model = False
-testing_amount = 1000  # Number of testing samples to use: 0-10000
+testing_amount = 10000  # Number of testing samples to use: 0-10000
 
 # Set network parameters
 input_size = 784  # Number of neurons in the input layer (default = 784 from 28x28 flattened image)

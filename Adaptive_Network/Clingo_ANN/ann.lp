@@ -82,7 +82,7 @@ neuron(input, 1, Index, Value) :-
     Value = @random_value(1, Index).  % Passing in args allows for unique values.
 
 % Set bias neurons
-neuron(bias, Layer, 0, -1) :-
+neuron(bias, Layer, 0, "-1") :-
 % neuron(bias, Layer, 0, -1000000) :-
     neuron(bias, Layer, 0).
 
@@ -105,7 +105,6 @@ neuron(Type, Layer, Index, Value) :-
     % Value = #sum { (Source_Value*Weight)/1000000: 
             edge(Layer - 1, Source_Index, Layer, Index, Weight),
             neuron(_, Layer - 1, Source_Index, Source_Value) }.
-    
     
             % Source_Layer = Layer - 1,
             % edge(Source_Layer, Source_Index, Layer, Index, Weight),

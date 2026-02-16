@@ -102,10 +102,10 @@ def train_network(network, loss, activation, train_images, train_labels, epochs=
 
             epoch_end_time = time.perf_counter()
             epoch_end_cpu = time.perf_counter()
-            remaining_time = (epoch_time - epoch_end_time) * (epochs - epoch - 1)
+            remaining_time = (epoch_end_time - epoch_time) * (epochs - epoch - 1)
             print(f"Epoch {epoch}, total training error: {total_error:.4f}")
-            print(f"Epoch wall-clock time: {epoch_time - epoch_end_time} seconds")
-            print(f"Epoch CPU time: {epoch_cpu - epoch_end_cpu} seconds")
+            print(f"Epoch wall-clock time: {epoch_end_time - epoch_time} seconds")
+            print(f"Epoch CPU time: {epoch_end_cpu - epoch_cpu} seconds")
             print(f"Estimated time remaining: {remaining_time} seconds -> {remaining_time / 60} minutes -> {remaining_time / 3600} hours\n")
 
         end_time = time.perf_counter()
