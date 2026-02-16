@@ -1,5 +1,5 @@
 %% To visualize graph:
-%% clingo .\Adaptive_Network\Clingo_ANN\ann.lp | python .\Adaptive_Network\Clingo_ANN\graph_visualizer.py | dot -T pdf -o '.\Adaptive_Network\Clingo_ANN\network_visualizer.pdf'
+%% clingo .\Adaptive_Network\Clingo_ANN\ann_scaled_int.lp | python .\Adaptive_Network\Clingo_ANN\graph_visualizer.py | dot -T pdf -o '.\Adaptive_Network\Clingo_ANN\network_visualizer.pdf'
 %%
 %% TODO, notes, and ideas for this file:
 % Need to add: biases, activation functions, excitation functions, edge weights, neuron values.
@@ -18,6 +18,7 @@
 %       Now I can use any activation function (ReLU, sigmoid, etc.)
 %       Pros: More flexible with activation functions, and can leverage Python's handling of floats.
 %       Cons: This is less elegant or self-contained. Could introduce performance overhead.
+
 
 %%% Network Parameters %%%
 % # Set network parameters
@@ -41,15 +42,20 @@ edge(Source_Layer, Source_Index, Target_Layer, Target_Index, Weight) :-
     neuron(_, Source_Layer, Source_Index),
     neuron(_, Target_Layer, Target_Index),
     Target_Layer = Source_Layer + 1,
-    Weight = @random_weight(Source_Layer, Source_Index, Target_Layer, Target_Index).  % Passing in args allows for unique values.
+    % Weight = @random_weight(Source_Layer, Source_Index, Target_Layer, Target_Index).  % Passing in args allows for unique values.
+    Weight = 5000.  % 0.5 * 1e4
+    % Weight = 500000.  % 0.5 * 1e6
 
 %%% Neuron Definitions %%%
+
+% Input
 neuron(Type, Layer, Index) :- 
     Type = input, 
     input_size(I), 
     Layer = 1, 
     Index = 1..I.
 
+% Hidden
 neuron(Type, Layer, Index) :- 
     Type = hidden, 
     hidden_size(I), 
@@ -57,6 +63,7 @@ neuron(Type, Layer, Index) :-
     Layer = 2..H + 1, 
     Index = 1..I.
 
+% Output
 neuron(Type, Layer, Index) :- 
     Type = output, 
     output_size(I), 
@@ -64,32 +71,37 @@ neuron(Type, Layer, Index) :-
     Layer = N + 2,
     Index = 1..I.
 
+% Bias
 neuron(Type, Layer, Index) :-
     Type = bias,
     num_hidden_layers(H),
     Layer = 1..H + 1,
     Index = 0.
 
-% Use random input values
-neuron(input, 1, Index, Value) :-
-    neuron(input, 1, Index),
-    Value = @random_value(1, Index).  % Passing in args allows for unique values.
+
+%%% Excitation Functions / Forward Pass %%%
+
+% Use random input values for testing
+% neuron(input, 1, Index, Value) :-
+%     neuron(input, 1, Index),
+%     Value = @random_value(1, Index).  % Passing in args allows for unique values.
+neuron(input, 1, 1, 12345).
+neuron(input, 1, 2, 67890).
 
 % Set bias neurons
-neuron(bias, Layer, 0, "-1") :-
-% neuron(bias, Layer, 0, -1000000) :-
+% neuron(bias, Layer, 0, -1000000) :-  % 1e6 precision
+neuron(bias, Layer, 0, -10000) :-  % 1e4 precision
     neuron(bias, Layer, 0).
 
 % Excitation function
 neuron(Type, Layer, Index, Value) :-
     neuron(Type, Layer, Index),
     Layer > 1,
-    Value = #sum { @multiply(Source_Value, Weight) : 
-    % Value = #sum { (Source_Value*Weight)/1000000: 
+    Index > 0,
+    % Value = #sum { (Source_Value*Weight)/1000000 :  % 1e6 precision
+    Value = #sum { (Source_Value*Weight)/10000 :  % 1e4 precision
             edge(Layer - 1, Source_Index, Layer, Index, Weight),
             neuron(_, Layer - 1, Source_Index, Source_Value) }.
-
-% sum()
 
 
 %% Activation Functions
@@ -111,14 +123,16 @@ def random_value(Layer, Index):
     # Returns a scaled integer value between 0 and 1 with 6 decimal places. (python stores 17ish though)
     val = random.uniform(0, 10)
     # return clingo.String(f"{val:.6f}")
-    # return clingo.Number(int(val * 1e6))
-    return clingo.String(str(val))
+    return clingo.Number(int(val * 1e6))
+    # return clingo.Number(int(val * 1e4))
+    # return clingo.String(str(val))
 
 def random_weight(Source_Layer, Source_Index, Target_Layer, Target_Index):
     # Generate a single random float as a scaled integer with 6 decimal places.
     val = random.uniform(-0.5, 0.5)
-    # return clingo.Number(int(val * 1e6))
-    return clingo.String(str(val))
+    return clingo.Number(int(val * 1e6))
+    # return clingo.Number(int(val * 1e4))
+    # return clingo.String(str(val))
 
 def multiply(x, y):
     xfloat = float(x.string)

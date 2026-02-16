@@ -51,7 +51,8 @@ if toks_next[0].startswith("OPT") or toks_next[0].startswith("SAT"):
             layer = int(param[1])
             index = int(param[2])
             # val = f'{(float(param[3]) / (1e6)):.3f}'
-            val = f'{float(param[3])}'
+            val = f'{(float(param[3]) / (1e4)):.3f}'
+            # val = f'{float(param[3])}'
 
             # try:
             #     layer_nodes[layer] += f'      node_{layer}_{index} [label={n_type}] ;\n'
