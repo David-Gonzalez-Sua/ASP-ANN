@@ -1,5 +1,5 @@
 ## Creates DOT code to visualize a graph made by the ann.lp program.
-## Use: clingo .\Adaptive_Network\Clingo_ANN\ann.lp | python .\Adaptive_Network\Clingo_ANN\graph_visualizer.py | dot -T pdf -o '.\Adaptive_Network\Clingo_ANN\network_visualizer.pdf'
+## Use: clingo .\Adaptive_Network\Clingo_ANN\ann.lp | python .\Adaptive_Network\Clingo_ANN\graph_visualizer.py | dot -T pdf -o '.\Adaptive_Network\Clingo_ANN\graphs\network_visualizer.pdf'
 
 
 show_edge_weights = False
@@ -77,7 +77,7 @@ if toks_next[0].startswith("OPT") or toks_next[0].startswith("SAT"):
                 else:
                     layer_nodes[layer] = "    { rank=same;\n" + f"      node_{layer}_{index} [label={val}] ;\n"
 
-        if t.startswith("edge"):
+        elif t.startswith("edge"):
             line = t[5:-1]
             param = line.split(',')
             source_layer = int(param[0])
