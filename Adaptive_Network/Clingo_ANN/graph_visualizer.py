@@ -2,6 +2,11 @@
 ## Use: clingo .\Adaptive_Network\Clingo_ANN\ann.lp | python .\Adaptive_Network\Clingo_ANN\graph_visualizer.py | dot -T pdf -o '.\Adaptive_Network\Clingo_ANN\network_visualizer.pdf'
 
 
+show_edge_weights = False
+show_bias_nodes = False
+scaled_integer = True
+precision = 4    # Can be 4 or 6 for 1e4 1e6 respectively
+
 # Reading in clingo output
 toks_last = None
 toks = None
@@ -50,24 +55,12 @@ if toks_next[0].startswith("OPT") or toks_next[0].startswith("SAT"):
             n_type = param[0]
             layer = int(param[1])
             index = int(param[2])
+            if scaled_integer:
+                val = f'{(float(param[3]) / (10**precision)):.3f}'
+            else:
+                val = f'{float(param[3])}'
             # val = f'{(float(param[3]) / (1e6)):.3f}'
-            val = f'{(float(param[3]) / (1e4)):.3f}'
-            # val = f'{float(param[3])}'
-
-            # try:
-            #     layer_nodes[layer] += f'      node_{layer}_{index} [label={n_type}] ;\n'
-            # except KeyError:
-            #     layer_nodes[layer] = '    { rank=same;\n' + f'      node_{layer}_{index} [label={n_type}] ;\n'
-            # try:
-            #     layer_nodes[layer] += f'      {n_type}_{layer}_{index} [label=\'{val}\'] ;\n'
-            # except KeyError:
-            #     layer_nodes[layer] = '    { rank=same;\n' + f'      {n_type}_{layer}_{index} [label=\'{val}\'] ;\n'
-
-            # if n_type == 'bias':
-            #     try:
-            #         layer_nodes[layer] += f'      node_{layer}_{index} [label={val}, rank=max] ;\n'
-            #     except KeyError:
-            #         layer_nodes[layer] = '    { rank=same;\n' + f'      node_{layer}_{index} [label={val}, rank=max] ;\n'
+            # val = f'{(float(param[3]) / (1e4)):.3f}'
             
             try:
                 if n_type == 'bias':
@@ -91,14 +84,20 @@ if toks_next[0].startswith("OPT") or toks_next[0].startswith("SAT"):
             source_index = int(param[1])
             target_layer = int(param[2])
             target_index = int(param[3])
-            weight = f'{(float(param[4]) / (1e6)):.3f}'
+            if scaled_integer:
+                weight = f'{(float(param[4]) / (10**precision)):.3f}'
+            else:
+                weight = f'{float(param[4])}'
 
-            edge = f'    node_{source_layer}_{source_index} -> node_{target_layer}_{target_index} ;\n'
-            # edge = f'    node_{source_layer}_{source_index} -> node_{target_layer}_{target_index} [label={weight}] ;\n'
+            if source_index != 0 or (source_index == 0 and show_bias_nodes):
+                if show_edge_weights:
+                    edge = f'    node_{source_layer}_{source_index} -> node_{target_layer}_{target_index} [label={weight}] ;\n'
+                else:
+                    edge = f'    node_{source_layer}_{source_index} -> node_{target_layer}_{target_index} ;\n'
+                edges += edge
 
-            edges += edge
-
-    layer_nodes.update({k: layer_nodes[k] + v for k, v in bias_nodes.items()})
+    if show_bias_nodes:
+        layer_nodes.update({k: layer_nodes[k] + v for k, v in bias_nodes.items()})
     full_layers = {k: v + '    }\n\n' for k, v in layer_nodes.items()}
 
     output += ''.join(full_layers.values()) + edges + "\n} // Graph"

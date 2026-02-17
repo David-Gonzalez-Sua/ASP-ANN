@@ -19,8 +19,13 @@ existing_model_filename = "ptm_default.npy"  # Default
 # existing_model_filename = "ptm_mnist_CCE_ReLU_SOFTMAX_6000t_25e_1a.npy"
 # existing_model_filename = "ptm_mnist_CCE_ReLU_SOFTMAX_12000t_20e_1a.npy"
 
+
+train_model = False
+test_model = False
+
 save_trained_model_default = False
 save_trained_model_with_params = False  # Both can be true
+save_epochs = True  # Saves the model after training each epoch, with filename ptm_epoch{epoch}.npy in training_model_snapshots folder
 
 save_terminal_log_default = False
 save_terminal_log_with_params = False  # Only one of these should be true
@@ -31,14 +36,12 @@ create_network_structure_dot = False
 manual_testing_routine = True
 
 # Set training parameters
-train_model = False
 training_amount = 12000  # Number of training samples to use: 0-60000
 
 epochs = 20  # Number of epochs to train for
 alpha = 0.001  # learning rate
 
 # Set testing parameters
-test_model = False
 testing_amount = 10000  # Number of testing samples to use: 0-10000
 
 # Set network parameters
@@ -83,19 +86,19 @@ else:
 if train_model:
     train_images = train_images[:training_amount]
     train_labels = train_labels[:training_amount]
-    utils.train_network(network, loss, activation, train_images, train_labels, epochs, alpha)
-
-# Test ANN
-if test_model:
-    test_images = test_images[:testing_amount]
-    test_labels = test_labels[:testing_amount]
-    utils.test_network(network, activation, test_images, test_labels)
+    utils.train_network(network, loss, activation, train_images, train_labels, epochs, alpha, save_trained_model_default)
 
 # Saving the trained model
 if save_trained_model_default:
     network.save_network("Adaptive_Network/Python_ANN/trained_models/ptm_default.npy")
 if save_trained_model_with_params:
     network.save_network(f"Adaptive_Network/Python_ANN/trained_models/ptm_mnist_{loss}_{activation}_{training_amount}t_{epochs}e_{int(1000*alpha)}a.npy")
+
+# Test ANN
+if test_model:
+    test_images = test_images[:testing_amount]
+    test_labels = test_labels[:testing_amount]
+    utils.test_network(network, activation, test_images, test_labels)
 
 # Print network structure
 if print_network_structure_list:

@@ -1,5 +1,6 @@
 %% To visualize graph:
 %% clingo .\Adaptive_Network\Clingo_ANN\ann_scaled_int.lp | python .\Adaptive_Network\Clingo_ANN\graph_visualizer.py | dot -T pdf -o '.\Adaptive_Network\Clingo_ANN\network_visualizer.pdf'
+%% clingo .\MNIST_Dataset\Clingo_Facts\train_data\train_image_0.lp .\Adaptive_Network\Clingo_ANN\ann_scaled_int.lp | python .\Adaptive_Network\Clingo_ANN\graph_visualizer.py | dot -T pdf -o '.\Adaptive_Network\Clingo_ANN\network_visualizer.pdf'
 %%
 %% TODO, notes, and ideas for this file:
 % Need to add: biases, activation functions, excitation functions, edge weights, neuron values.
@@ -37,14 +38,17 @@ hidden_size(3).
 num_hidden_layers(2).
 output_size(1).
 
+
 %%% Network Structure %%%
 edge(Source_Layer, Source_Index, Target_Layer, Target_Index, Weight) :-
     neuron(_, Source_Layer, Source_Index),
     neuron(_, Target_Layer, Target_Index),
     Target_Layer = Source_Layer + 1,
+    Target_Index > 0,
     % Weight = @random_weight(Source_Layer, Source_Index, Target_Layer, Target_Index).  % Passing in args allows for unique values.
     Weight = 5000.  % 0.5 * 1e4
     % Weight = 500000.  % 0.5 * 1e6
+
 
 %%% Neuron Definitions %%%
 
@@ -85,8 +89,8 @@ neuron(Type, Layer, Index) :-
 % neuron(input, 1, Index, Value) :-
 %     neuron(input, 1, Index),
 %     Value = @random_value(1, Index).  % Passing in args allows for unique values.
-neuron(input, 1, 1, 12345).
-neuron(input, 1, 2, 67890).
+% neuron(input, 1, 1, 12345).
+% neuron(input, 1, 2, 67890).
 
 % Set bias neurons
 % neuron(bias, Layer, 0, -1000000) :-  % 1e6 precision
@@ -106,10 +110,26 @@ neuron(Type, Layer, Index, Value) :-
 
 %% Activation Functions
 
+% ReLU activation function
+% neuron(Type, Layer, Index, Value) :-
+%     neuron(Type, Layer, Index, Value),
+%     Value > 0.
+
+% neuron(Type, Layer, Index, 0) :-
+%     neuron(Type, Layer, Index, Value),
+%     Value <= 0.
+
+neuron(input, 1, Index, Value, 1) :-
+    neuron(input, 1, Index, Value),
+    Index <= I,
+    input_size(I).
+neuron(Type, Layer, Index, Value, 1) :-
+    neuron(Type, Layer, Index, Value),
+    Type != input.
 
 % #show neuron/3.
-#show neuron/4.
-% #show neuron/5.
+% #show neuron/4.
+#show neuron/5.
 #show edge/5.
 % #show excitation/3.
 % #show val/3.

@@ -108,6 +108,9 @@ def train_network(network, loss, activation, train_images, train_labels, epochs=
             print(f"Epoch CPU time: {epoch_end_cpu - epoch_cpu} seconds")
             print(f"Estimated time remaining: {remaining_time} seconds -> {remaining_time / 60} minutes -> {remaining_time / 3600} hours\n")
 
+            network.save_network(f"Adaptive_Network/Python_ANN/training_model_snapshots/ptm_epoch{epoch}.npy")
+            print(f"Model snapshot saved for epoch {epoch}.\n")
+
         end_time = time.perf_counter()
         end_cpu = time.process_time()
 
