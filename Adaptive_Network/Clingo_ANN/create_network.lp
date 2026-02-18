@@ -4,16 +4,15 @@
 
 
 %%% Network Parameters %%%
-% # Set network parameters
-% input_size(784).
-% hidden_size(128).
-% num_hidden_layers(2).
-% output_size(10).
-
-input_size(3).
-hidden_size(5).
+input_size(784).
+hidden_size(128).
 num_hidden_layers(2).
-output_size(2).
+output_size(10).
+
+% input_size(3).
+% hidden_size(5).
+% num_hidden_layers(2).
+% output_size(2).
 
 % input_size(2).
 % hidden_size(3).
@@ -27,8 +26,8 @@ edge(Source_Layer, Source_Index, Target_Layer, Target_Index, Weight) :-
     neuron(_, Target_Layer, Target_Index),
     Target_Layer = Source_Layer + 1,
     Target_Index > 0,
-    % Weight = @random_weight(Source_Layer, Source_Index, Target_Layer, Target_Index).  % Passing in args allows for unique values.
-    Weight = 5000.  % 0.5 * 1e4
+    Weight = @random_weight(Source_Layer, Source_Index, Target_Layer, Target_Index).  % Passing in args allows for unique values.
+    % Weight = 5000.  % 0.5 * 1e4
     % Weight = 500000.  % 0.5 * 1e6
 
 

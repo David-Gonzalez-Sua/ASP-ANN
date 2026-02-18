@@ -5,6 +5,8 @@ import argparse
 
 
 parser = argparse.ArgumentParser()
+parser.add_argument('-v', default = False, type = bool,
+                    help = "Whether to include neuron values in the output file. (Default = False)")
 parser.add_argument('-s', default = True, type = bool,
                     help = "Whether to use scaled integers for weights. (Default = True)")
 parser.add_argument('-p', default = 4, type = int,
@@ -13,6 +15,7 @@ parser.add_argument('-f', default='randomized', type=str,
                     help = "Unique identifier for output file name. (Default = 'randomized')")
 args = parser.parse_args()
 
+save_values = args.v
 scaled_integer = args.s
 precision = args.p
 identifier = args.f
@@ -45,8 +48,14 @@ if toks_next[0].startswith("OPT") or toks_next[0].startswith("SAT"):
             n_type = param[0]
             layer = int(param[1])
             index = int(param[2])
+            if save_values and scaled_integer and len(param) > 3:
+                value = f'{int(param[3])}'
+            elif save_values and not scaled_integer and len(param) > 3:
+                value = f'{str(param[3])}'
 
             facts.append(f"neuron({n_type}, {layer}, {index}).")
+            if save_values and len(param) > 3:
+                facts.append(f"neuron({n_type}, {layer}, {index}, {value}).")
 
         elif t.startswith("edge"):
             line = t[5:-1]

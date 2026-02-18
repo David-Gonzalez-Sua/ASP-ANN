@@ -4,6 +4,8 @@
 %% clingo .\MNIST_Dataset\Clingo_Facts\train_data\train_image_0.lp .\Adaptive_Network\Clingo_ANN\models\ann_scaled_int_3i_5h_2n_2o_randomized.lp .\Adaptive_Network\Clingo_ANN\ann_scaled_int.lp | python .\Adaptive_Network\Clingo_ANN\graph_visualizer.py | dot -T pdf -o '.\Adaptive_Network\Clingo_ANN\graphs\network_visualizer.pdf'
 %% clingo .\Adaptive_Network\Clingo_ANN\models\ann_scaled_int_3i_5h_2n_2o_randomized.lp .\Adaptive_Network\Clingo_ANN\ann_scaled_int.lp | python .\Adaptive_Network\Clingo_ANN\graph_visualizer.py | dot -T pdf -o '.\Adaptive_Network\Clingo_ANN\graphs\network_visualizer.pdf'
 %% clingo .\Adaptive_Network\Clingo_ANN\models\ann_scaled_int_3i_5h_2n_2o_weights5000.lp .\Adaptive_Network\Clingo_ANN\ann_scaled_int.lp | python .\Adaptive_Network\Clingo_ANN\graph_visualizer.py | dot -T pdf -o '.\Adaptive_Network\Clingo_ANN\graphs\network_visualizer.pdf'
+%%
+%% clingo .\MNIST_Dataset\Clingo_Facts\train_data\train_image_0.lp .\Adaptive_Network\Clingo_ANN\models\ann_scaled_int_784i_128h_2n_10o_randomized.lp .\Adaptive_Network\Clingo_ANN\ann_scaled_int.lp | python .\Adaptive_Network\Clingo_ANN\graph_visualizer.py | dot -T pdf -o '.\Adaptive_Network\Clingo_ANN\graphs\network_visualizer.pdf'
 %% 
 %% TODO, notes, and ideas for this file:
 % Need to add: biases, activation functions, excitation functions, edge weights, neuron values.
@@ -122,6 +124,13 @@ excitation(Type, Layer, Index, Value) :-
             edge(Layer - 1, Source_Index, Layer, Index, Weight),
             neuron(_, Layer - 1, Source_Index, Source_Value) }.
 
+excitation(Type, Layer, Index, Value) :-
+    neuron(Type, Layer, Index),
+    Layer > 2, Index > 0,
+    Value = #sum { (Source_Value/(10000/Weight)), Source_Index :  % 1e4 precision
+            edge(Layer - 1, Source_Index, Layer, Index, Weight),
+            neuron(_, Layer - 1, Source_Index, Source_Value) }.
+
 % excitation(Type, Layer, Index, Value) :-
 %     neuron(Type, Layer, Index),
 %     Layer > 2, Index > 0,
@@ -129,16 +138,9 @@ excitation(Type, Layer, Index, Value) :-
 %             edge(Layer - 1, Source_Index, Layer, Index, Weight),
 %             neuron(_, Layer - 1, Source_Index, Source_Value) }.
 
-excitation(Type, Layer, Index, Value) :-
-    neuron(Type, Layer, Index),
-    Layer = 3, Index > 0,
-    Value = #sum { (Source_Value/(10000/Weight)) :  % 1e4 precision
-            edge(Layer - 1, Source_Index, Layer, Index, Weight),
-            neuron(_, Layer - 1, Source_Index, Source_Value),
-            neuron(_, Layer - 1, Source_Index),
-            neuron(_, Layer, Index) }.
-
 % BUG: Excitation function is not summing correctly for layes past 2. It is taking only a single neuron as the full sum.
+%      When values (and weights) are the same throughout a given layer, it breaks the combinations and causes the sum to only take a single neuron!
+%      FIX: Add the source index as a condition to the sum to break the combinations and allow for the full sum to be calculated.
 
 
 %%% Activation Functions %%%
@@ -168,11 +170,81 @@ neuron(output, Layer, Index, Value) :-
 
 % Normalized Sum activation function
 % neuron(output, Layer, Index, Value) :-
-%     excitation(output, Layer, Index, ValueOg),
+%     excitation(output, Layer, Index, Exc),
 %     num_hidden_layers(N), output_size(I), 
-%     Layer = N + 2, Index = 1..I, 
-%     Sum = #sum { V : excitation(output, Layer, Index2, V), Index2 = 1..I },
-%     Value = 10000 * ValueOg / Sum.
+%     Layer = N + 2, Index = 1..I,
+%     Value = #sum { Val : excitation(output, Layer, Index2, Val) }.
+    % Value = Value / I.
+    % Value = 10000 * ValueOg / Sum.
+
+% excitation(Type, Layer, Index, Value) :-
+%     neuron(Type, Layer, Index),
+%     Layer > 2, Index > 0,
+%     Value = #sum { (Source_Value/(10000/Weight)), Source_Index :  % 1e4 precision
+%             edge(Layer - 1, Source_Index, Layer, Index, Weight),
+%             neuron(_, Layer - 1, Source_Index, Source_Value) }.
+
+% output_sum(Sum) :- 
+%     num_hidden_layers(N), output_size(I),
+%     Layer = N + 2, 
+%     Sum = #sum { V, Index : excitation(output, Layer, Index, V), Index = 1..I }.
+    % Layer = N + 2, Index = 1..I, 
+    % Sum = #sum { V : excitation(output, _, Index, V) }.
+    % Sum = #sum { V : excitation(output, Layer, Index, V) }.
+    % Sum = 10101010.
+
+% probability(Layer, Index, Prob) :-
+%     excitation(output, Layer, Index, Value),
+%     output_sum(Layer, SumValue).
+
+% neuron(output, Layer, Index, Prob) :-
+%     excitation(output, Layer, Index, Value),
+%     output_sum(Layer, Sum),
+%     % S = SumValue / 1000, S != 0,  %% Rescale sum for precision
+%     % Prob = (Value / S) * 10. 
+%     Prob = Sum.
+%     % Prob = ((Value / (SumValue / 1000)) * 10).
+
+% excitation(Type, Layer, Index, Value) :-
+%     neuron(Type, Layer, Index),
+%     Layer > 2, Index > 0,
+%     Value = #sum { (Source_Value/(10000/Weight)), Source_Index :  % 1e4 precision
+%             edge(Layer - 1, Source_Index, Layer, Index, Weight),
+%             neuron(_, Layer - 1, Source_Index, Source_Value) }.
+
+
+%%% Hacked together way to activate output neurons %%%
+% sum_output(Sum) :- neuron(output, Layer, Index, Value), Sum = #sum { Value : neuron(output, Layer, Index, Value) }.
+
+% sum_output(Sum) :-
+%     excitation(output, Layer, 1, Out1),
+%     excitation(output, Layer, 2, Out2),
+%     excitation(output, Layer, 3, Out3),
+%     excitation(output, Layer, 4, Out4),
+%     excitation(output, Layer, 5, Out5),
+%     excitation(output, Layer, 6, Out6),
+%     excitation(output, Layer, 7, Out7),
+%     excitation(output, Layer, 8, Out8),
+%     excitation(output, Layer, 9, Out9),
+%     excitation(output, Layer, 10, Out10),
+%     Sum = Out1 + Out2 + Out3 + Out4 + Out5 + Out6 + Out7 + Out8 + Out9 + Out10.
+
+% sum_output(Sum) :-
+%     excitation(output, Layer, 1, Out1),
+%     excitation(output, Layer, 2, Out2),
+%     Sum = Out1 + Out2.
+% % #show sum_output/1.
+% neuron(output, Layer, Index, Value) :-
+%     excitation(output, Layer, Index, Exc), 
+%     sum_output(Sum),
+%     Value = ((Exc / (Sum / 1000)) * 10).
+    % Value = 1.
+
+% neuron(output, Layer, Index, Value) :-
+%     excitation(output, Layer, 1, Out1),
+%     excitation(output, Layer, 2, Out2),
+%     Value = @p_dist(Index, Out1, Out2),
+%     Index = 1..2.
 
 % Activate only loaded input neurons for testing
 neuron(input, 1, Index, Value, 1) :-
@@ -182,13 +254,13 @@ neuron(input, 1, Index, Value, 1) :-
 neuron(Type, Layer, Index, Value, 1) :-
     neuron(Type, Layer, Index, Value),
     Type != input.
-% #show neuron/5.
+#show neuron/5.
 
-% #show neuron/3.
-#show neuron/4.
-% #show neuron/5.
 #show edge/5.
-#show excitation/4.
+% #show excitation/4.
+% #show neuron/3.
+% #show neuron/4.
+% #show neuron/5.
 % #show val/3.
 
 
@@ -253,5 +325,18 @@ def exp_div(x, sum_exp):
 #     s = sum(exps)
 #     y = [yi / s for yi in exps]
 #     return y
+
+def p_dist(index, out1, out2):
+    out1_float = float(out1.number)/1e4
+    out2_float = float(out2.number)/1e4
+    total = out1_float + out2_float
+    if total == 0:
+        return clingo.Number(0)
+    if index == 1:
+        prob = (out1_float / total) * 1e4
+        return clingo.Number(int(prob))
+    else:
+        prob = (out2_float / total) * 1e4
+        return clingo.Number(int(prob))
 
 #end.

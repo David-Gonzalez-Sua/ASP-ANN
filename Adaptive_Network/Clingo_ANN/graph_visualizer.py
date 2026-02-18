@@ -2,6 +2,7 @@
 ## Use: clingo .\Adaptive_Network\Clingo_ANN\ann.lp | python .\Adaptive_Network\Clingo_ANN\graph_visualizer.py | dot -T pdf -o '.\Adaptive_Network\Clingo_ANN\graphs\network_visualizer.pdf'
 
 
+# show_values = True
 show_edge_weights = False
 show_bias_nodes = False
 scaled_integer = True
