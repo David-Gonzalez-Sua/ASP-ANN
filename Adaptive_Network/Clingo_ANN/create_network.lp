@@ -1,13 +1,26 @@
 %% Creates a network structure based on specified parameters.
 %% clingo .\Adaptive_Network\Clingo_ANN\create_network.lp | python .\Adaptive_Network\Clingo_ANN\save_network.py -s True -p 4 -f 'randomized'
 %% -s = Scaled Integers bool, -p = Precision for scaled integers (4 or 6), -f = Unique identifier for output file name (default 'randomized')
-
+%%
+%% clingo .\Adaptive_Network\Clingo_ANN\create_network.lp -c i=<val> h=<val> n=<val> o=<val> | python .\Adaptive_Network\Clingo_ANN\save_network.py -s True -p 4 -f 'randomized'
+%% -s = Scaled Integers bool, -p = Precision for scaled integers (4 or 6), -f = Unique identifier for output file name (default 'randomized')
+%% i = input size, h = hidden layer size, n = number of hidden layers, o = output size
 
 %%% Network Parameters %%%
-input_size(784).
-hidden_size(128).
-num_hidden_layers(2).
-output_size(10).
+#const i = 784.  % Input size
+#const h = 128.  % Hidden layer size
+#const n = 2.    % Number of hidden layers
+#const o = 10.   % Output size
+
+input_size(i).
+hidden_size(h).
+num_hidden_layers(n).
+output_size(o).
+
+% input_size(784).
+% hidden_size(128).
+% num_hidden_layers(2).
+% output_size(10).
 
 % input_size(3).
 % hidden_size(5).
