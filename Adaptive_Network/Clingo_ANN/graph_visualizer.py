@@ -1,12 +1,32 @@
 ## Creates DOT code to visualize a graph made by the ann.lp program.
 ## Use: clingo .\Adaptive_Network\Clingo_ANN\ann.lp | python .\Adaptive_Network\Clingo_ANN\graph_visualizer.py | dot -T pdf -o '.\Adaptive_Network\Clingo_ANN\graphs\network_visualizer.pdf'
+## CLINGO OUTPUT MUST BE PIPED IN
+
+import argparse
 
 
-# show_values = True
-show_edge_weights = False
-show_bias_nodes = False
-scaled_integer = True
-precision = 4    # Can be 4 or 6 for 1e4 1e6 respectively
+# Options for what to show in the graph, and how to interpret values
+parser = argparse.ArgumentParser()
+# parser.add_argument('-c', default = True, type = bool,
+#                     help = "Whether clingo output is being piped in. If False, reads from a file instead. (Default = True)")
+parser.add_argument('-v', default = True, type = bool,
+                    help = "Whether to show neuron values in the output. (Default = True)")
+parser.add_argument('-w', default = False, type = bool,
+                    help = "Whether to show edge weights in the output. (Default = False)")
+parser.add_argument('-b', default = False, type = bool,
+                    help = "Whether to show bias nodes in the output. (Default = False)")
+parser.add_argument('-s', default=True, type = bool,
+                    help = "Whether scaled integers are being used. (Default = True)")
+parser.add_argument('-p', default=4, type=int,
+                    help = "Precision for scaled integers. Can be 4 or 6 for 1e4 or 1e6 respectively. (Default = 4)")
+args = parser.parse_args()
+
+# clingo_output = args.c  # Default True
+show_values = args.v  # Default True
+show_edge_weights = args.w  # Default False
+show_bias_nodes = args.b  # Default False
+scaled_integer = args.s  # Default True
+precision = args.p  # Default 4
 
 # Reading in clingo output
 toks_last = None
