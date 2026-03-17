@@ -55,6 +55,7 @@ act_fun(A, Output, Type) :-
 
 
 %% Forces one output value per neuron
+1 { neuron_xor(ID, Index, Val) : neuron(ID, Index, Val) } 1 :- index(Index), ID = xor1.
 % Layer 1 - Input Layer
 1 { neuron_carry(ID, Index, Val) : neuron(ID, Index, Val) } 1 :- ID = carry, Index = 0, Val = 0.
 1 { neuron_input(ID, Index, Val) : neuron(ID, Index, Val) } 1 :- bit(ID, Index, Val).

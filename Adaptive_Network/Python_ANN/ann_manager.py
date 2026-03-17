@@ -12,7 +12,7 @@ import ann_utils as utils
 #### ----------------------------------- CONFIG ---------------------------------------- ####
 
 # Options
-load_existing_model = True  # Creates new network if False
+load_existing_model = False  # Creates new network if False
 existing_model_filename = "ptm_default.npy"  # Default
 # existing_model_filename = "ptm_mnist_MSE_SIGMOID_2000t_15e_10a.npy"
 # existing_model_filename = "ptm_mnist_CCE_ReLU_SOFTMAX_6000t_20e_10a.npy"
@@ -31,18 +31,18 @@ save_terminal_log_default = False
 save_terminal_log_with_params = False  # Only one of these should be true
 
 print_network_structure_list = False
-create_network_structure_dot = False
+create_network_structure_dot = True
 
 manual_testing_routine = True
 
 # Set training parameters
-training_amount = 12000  # Number of training samples to use: 0-60000
+training_amount = 1000  # Number of training samples to use: 0-60000
 
-epochs = 20  # Number of epochs to train for
+epochs = 2  # Number of epochs to train for
 alpha = 0.001  # learning rate
 
 # Set testing parameters
-testing_amount = 10000  # Number of testing samples to use: 0-10000
+testing_amount = 1000  # Number of testing samples to use: 0-10000
 
 # Set network parameters
 input_size = 784  # Number of neurons in the input layer (default = 784 from 28x28 flattened image)
@@ -86,7 +86,7 @@ else:
 if train_model:
     train_images = train_images[:training_amount]
     train_labels = train_labels[:training_amount]
-    utils.train_network(network, loss, activation, train_images, train_labels, epochs, alpha, save_trained_model_default)
+    utils.train_network(network, loss, activation, train_images, train_labels, epochs, alpha)
 
 # Saving the trained model
 if save_trained_model_default:

@@ -1,0 +1,98 @@
+
+digraph G {
+    rankdir=LR; // makes the graph flow left-to-right
+    splines=line;
+
+    node [
+        shape=circle,
+        fixedsize=true,
+        width=0.5,
+        fontsize=10
+    ];
+
+    edge [
+        arrowsize=0.5,
+        fontsize=8,
+        labeldistance=2,
+        labelangle=30
+    ];
+    
+    // Align all inputs from a given layer
+    { rank=same;
+      input_0 [label=0.0] ;
+      input_1 [label=0.0] ;
+      input_2 [label=0.0] ;
+    }
+
+    { rank=same;
+      output_0 [label=0.500] ;
+      output_1 [label=0.500] ;
+    }
+
+    { rank=same ;
+      hidden_0_0 [label=0.000] ;
+      hidden_0_1 [label=0.000] ;
+      hidden_0_2 [label=0.000] ;
+      hidden_0_3 [label=0.000] ;
+      hidden_0_4 [label=0.000] ;
+    }
+
+    { rank=same ;
+      hidden_1_0 [label=0.000] ;
+      hidden_1_1 [label=0.000] ;
+      hidden_1_2 [label=0.000] ;
+      hidden_1_3 [label=0.000] ;
+      hidden_1_4 [label=0.000] ;
+    }
+
+    hidden_1_0:e -> output_0:w ;
+    hidden_1_0:e -> output_1:w ;
+    hidden_1_1:e -> output_0:w ;
+    hidden_1_1:e -> output_1:w ;
+    hidden_1_2:e -> output_0:w ;
+    hidden_1_2:e -> output_1:w ;
+    hidden_1_3:e -> output_0:w ;
+    hidden_1_3:e -> output_1:w ;
+    hidden_1_4:e -> output_0:w ;
+    hidden_1_4:e -> output_1:w ;
+    hidden_0_0:e -> hidden_1_0:w ;
+    hidden_0_0:e -> hidden_1_1:w ;
+    hidden_0_0:e -> hidden_1_2:w ;
+    hidden_0_0:e -> hidden_1_3:w ;
+    hidden_0_0:e -> hidden_1_4:w ;
+    hidden_0_1:e -> hidden_1_0:w ;
+    hidden_0_1:e -> hidden_1_1:w ;
+    hidden_0_1:e -> hidden_1_2:w ;
+    hidden_0_1:e -> hidden_1_3:w ;
+    hidden_0_1:e -> hidden_1_4:w ;
+    hidden_0_2:e -> hidden_1_0:w ;
+    hidden_0_2:e -> hidden_1_1:w ;
+    hidden_0_2:e -> hidden_1_2:w ;
+    hidden_0_2:e -> hidden_1_3:w ;
+    hidden_0_2:e -> hidden_1_4:w ;
+    hidden_0_3:e -> hidden_1_0:w ;
+    hidden_0_3:e -> hidden_1_1:w ;
+    hidden_0_3:e -> hidden_1_2:w ;
+    hidden_0_3:e -> hidden_1_3:w ;
+    hidden_0_3:e -> hidden_1_4:w ;
+    hidden_0_4:e -> hidden_1_0:w ;
+    hidden_0_4:e -> hidden_1_1:w ;
+    hidden_0_4:e -> hidden_1_2:w ;
+    hidden_0_4:e -> hidden_1_3:w ;
+    hidden_0_4:e -> hidden_1_4:w ;
+    input_0:e -> hidden_0_0:w ;
+    input_0:e -> hidden_0_1:w ;
+    input_0:e -> hidden_0_2:w ;
+    input_0:e -> hidden_0_3:w ;
+    input_0:e -> hidden_0_4:w ;
+    input_1:e -> hidden_0_0:w ;
+    input_1:e -> hidden_0_1:w ;
+    input_1:e -> hidden_0_2:w ;
+    input_1:e -> hidden_0_3:w ;
+    input_1:e -> hidden_0_4:w ;
+    input_2:e -> hidden_0_0:w ;
+    input_2:e -> hidden_0_1:w ;
+    input_2:e -> hidden_0_2:w ;
+    input_2:e -> hidden_0_3:w ;
+    input_2:e -> hidden_0_4:w ;
+}

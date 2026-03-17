@@ -37,8 +37,8 @@ CLINGO="/mnt/c/Users/dgjsu/anaconda3/envs/potcassco/Library/bin/clingo.exe"
 
 load_model=true  # Set to true to load an existing model, false to create a new one
 
-testing_model_hardcoded=false  # Set to true to test the model, false to skip testing
-train_model=true  # Set to true to train the model, false to skip training
+testing_model_hardcoded=true  # Set to true to test the model, false to skip testing
+train_model=false  # Set to true to train the model, false to skip training
 training_amount=1  # Number of images to train on
 
 # ======== Filenames ========
@@ -106,8 +106,12 @@ fi
 if [ "$testing_model_hardcoded" = true ]; then
   echo "Testing ANN model..."
 
+  # "$CLINGO" "$model_file" "$ann_scaled_int_forward" \
+  #   | "$PYTHON" "$save_network" "-v" "True" "-s" "True" "-p" "4" "-f" "snapshot"
+
   "$CLINGO" "$model_file" "$ann_scaled_int_forward" \
-    | "$PYTHON" "$save_network" "-v" "True" "-s" "True" "-p" "4" "-f" "snapshot"
+    | tee >( "$PYTHON" "$save_network" "-v" "True" "-s" "True" "-p" "4" "-f" "example") \
+    | "$PYTHON" "$graph_visualizer" | dot -T png "-Gbgcolor=transparent" -o "./Adaptive_Network/Clingo_ANN/graphs/example_graph.png"
 
   # "$CLINGO" "$model_file" "$ann_scaled_int_forward" \
   #   | tee >( "$PYTHON" "$save_network" "-v" "True" "-s" "True" "-p" "4" "-f" "snapshot") \
@@ -115,9 +119,9 @@ if [ "$testing_model_hardcoded" = true ]; then
 
   model_snapshot=$(ls -t ./Adaptive_Network/Clingo_ANN/model_snapshots/*.lp | head -n 1)
 
-  "$CLINGO" "$model_snapshot" "$ann_scaled_int_backprop" \
-    | tee >( "$PYTHON" "$save_network" "-v" "True" "-s" "True" "-p" "4" "-f" "snapshot") \
-    | "$PYTHON" "$graph_visualizer" | dot -T pdf -o "$visualized_graph"
+  # "$CLINGO" "$model_snapshot" "$ann_scaled_int_backprop" \
+  #   | tee >( "$PYTHON" "$save_network" "-v" "True" "-s" "True" "-p" "4" "-f" "snapshot") \
+  #   | "$PYTHON" "$graph_visualizer" | dot -T pdf -o "$visualized_graph"
   
   echo "Model snapshot: $model_snapshot"
 fi

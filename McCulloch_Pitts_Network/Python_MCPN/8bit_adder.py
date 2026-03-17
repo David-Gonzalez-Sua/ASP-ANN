@@ -3,6 +3,7 @@
 # The network is built bit by bit, propagating carry bits as needed
 # Use: python 8bit_adder.py -a <value1> -b <value2> -s <bits>
 # Example usage: python '.\McCulloch-Pitts Network\Python_MCPN\8bit_adder.py' -a 250 -b 750 -s 16
+# above use wrong. correct usage: python '.\McCulloch-Pitts Network\Python_MCPN\8bit_adder.py' -x1 250 -x2 750 -b 16
 
 
 from collections import defaultdict
@@ -28,9 +29,9 @@ parser.add_argument('-b', default=8, type = int,
 
 args = parser.parse_args()
 
-x1 = args.a
-x2 = args.b
-bits = args.s
+x1 = args.x1
+x2 = args.x2
+bits = args.b
 
 x1_bin = dbc.decimal_to_binary(x1, bits)
 x2_bin = dbc.decimal_to_binary(x2, bits)

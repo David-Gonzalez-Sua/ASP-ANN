@@ -24,6 +24,8 @@
 %       Cons: This is less elegant or self-contained. Could introduce performance overhead.
 
 
+%%%%%%%% clingo --parallel-mode=8 --verbose=3 .\MNIST_Dataset\Clingo_Facts\train_data\train_image_0.lp .\Adaptive_Network\Clingo_ANN\models\ann_scaled_int_784i_128h_2n_10o_randomized.lp .\Adaptive_Network\Clingo_ANN\ann_scaled_int_forward.lp
+
 %%% Network Parameters and Structure for reference %%%
 % % input_size(784).
 % % hidden_size(128).
@@ -36,9 +38,9 @@
 %%% ======== Forward Pass ======== %%%
 
 %% Hardcoded neuron values for testing
-% neuron(input, 1, 1, 12345).
-% neuron(input, 1, 2, 67890).
-% neuron(input, 1, 3, 13579).
+neuron(input, 1, 1, 12345).
+neuron(input, 1, 2, 67890).
+neuron(input, 1, 3, 13579).
 
 %% Set bias neurons
 % 1e4 precision
@@ -51,25 +53,42 @@ neuron(bias, Layer, 0, -10000) :-
 
 
 %%% Excitation Functions %%%
-excitation(hidden, 2, Index, Value) :-
-    neuron(hidden, 2, Index), Index > 0,
-    % Value = #sum { (Source_Value/(10000/Weight)) :  % 1e4 precision
-    Value = #sum { (Source_Value*Weight) :  % 1e4 precision (actual input nuerons in data havent been scaled yet)
-            edge(1, Source_Index, 2, Index, Weight),
-            neuron(_, 1, Source_Index, Source_Value) }.
+% excitation(hidden, 2, Index, Value) :-
+%     neuron(hidden, 2, Index), Index > 0,
+%     % Value = #sum { (Source_Value/(10000/Weight)) :  % 1e4 precision
+%     Value = #sum { (Source_Value*Weight) :  % 1e4 precision (actual input nuerons in data havent been scaled yet)
+%             edge(1, Source_Index, 2, Index, Weight),
+%             neuron(_, 1, Source_Index, Source_Value) }.
+% excitation(hidden, 2, Index, Value) :-
+%     excitation(hidden, 2, Index), Index > 0,
+%     % Value = #sum { (Source_Value/(10000/Weight)) :  % 1e4 precision
+%     Value = #sum { (Source_Value*Weight) :  % 1e4 precision (actual input nuerons in data havent been scaled yet)
+%             edge(1, Source_Index, 2, Index, Weight),
+%             neuron(_, 1, Source_Index, Source_Value) }.
 
-excitation(hidden, Layer, Index, Value) :-
-    neuron(hidden, Layer, Index),
-    Layer > 2, Index > 0,
-    Value = #sum { 
-            (Source_Value/(10000/Weight)), Source_Index :  % 1e4 precision
-                edge(Layer - 1, Source_Index, Layer, Index, Weight),
-                neuron(_, Layer - 1, Source_Index, Source_Value),
-                Weight != 0 ;
-            0, Source_Index :
-                edge(Layer - 1, Source_Index, Layer, Index, Weight),
-                neuron(_, Layer - 1, Source_Index, Source_Value),
-                Weight = 0 }.
+% excitation(hidden, Layer, Index, Value) :-
+%     neuron(hidden, Layer, Index), num_hidden_layers(N),
+%     Layer > 2, Layer < N + 2, Index > 0,
+%     % Value = #sum { 
+%     %         (Source_Value/(10000/Weight)), Source_Index :  % 1e4 precision
+%     %             edge(Layer - 1, Source_Index, Layer, Index, Weight),
+%     %             neuron(_, Layer - 1, Source_Index, Source_Value),
+%     %             Weight != 0 ;
+%     %         0, Source_Index :
+%     %             edge(Layer - 1, Source_Index, Layer, Index, Weight),
+%     %             neuron(_, Layer - 1, Source_Index, Source_Value),
+%     %             Weight = 0 }.
+%     Value = #sum { 
+%             (Source_Value*Weight/10000), Source_Index :
+%                 edge(Layer - 1, Source_Index, Layer, Index, Weight),
+%                 neuron(_, Layer - 1, Source_Index, Source_Value) }.
+% excitation(hidden, Layer, Index, Value) :-
+%     excitation(hidden, Layer, Index), num_hidden_layers(N),
+%     Layer > 1, Layer < N + 2, Index > 0,
+%     Value = #sum { 
+%             (Source_Value*Weight/10000), Source_Index :
+%                 edge(Layer - 1, Source_Index, Layer, Index, Weight),
+%                 neuron(_, Layer - 1, Source_Index, Source_Value) }.
 
 excitation(output, Layer, Index, Value) :-
     neuron(output, Layer, Index),
@@ -84,8 +103,26 @@ excitation(output, Layer, Index, Value) :-
                 neuron(_, Layer - 1, Source_Index, Source_Value),
                 Weight = 0 }.
 
+excitation(Type, Layer, Index, Value) :-
+    neuron(Type, Layer, Index),
+    num_hidden_layers(N), Layer > 1, Layer < N + 2, Index > 0,
+    Value = #sum { 
+            (Source_Value/(10000/Weight)), Source_Index :  % 1e4 precision
+                edge(Layer - 1, Source_Index, Layer, Index, Weight),
+                neuron(_, Layer - 1, Source_Index, Source_Value),
+                Weight != 0 ;
+            0, Source_Index :
+                edge(Layer - 1, Source_Index, Layer, Index, Weight),
+                neuron(_, Layer - 1, Source_Index, Source_Value),
+                Weight = 0 }.
+
 % Enforce 1 value per neuron
-:- neuron(Type, Layer, Index, Value1), neuron(Type, Layer, Index, Value2), Value1 != Value2.
+%:- neuron(Type, Layer, Index, Value1), neuron(Type, Layer, Index, Value2), Value1 != Value2.
+%:- excitation(Type, Layer, Index, Value1), excitation(Type, Layer, Index, Value2), Value1 != Value2.
+% 1 { neuron(Type, Layer, Index, Value) : values(Value) } 1 :- neuron(Type, Layer, Index).
+% 1 { excitation(hidden, Layer, Index, Value) : num_hidden_layers(N), Layer = 2..N+1, hidden_size(S), Index = 1..S } 1 :- neuron(hidden, Layer, Index).
+%1 { excitation(hidden, Layer, Index) : num_hidden_layers(N), Layer = 2..N+1, hidden_size(S), Index = 1..S } 1 :- neuron(hidden, Layer, Index).
+
 
 % Kept for future reference
 % BUG: Excitation function is not summing correctly for layes past 2. It is taking only a single neuron as the full sum.

@@ -6,6 +6,7 @@
 
 %% Show answer in binary
 sum_bit(Index, Val) :- neuron_output(output, Index, Val).
+
 binary_sum(B7, B6, B5, B4, B3, B2, B1, B0) :- 
     sum_bit(7, B7), sum_bit(6, B6),
     sum_bit(5, B5), sum_bit(4, B4),

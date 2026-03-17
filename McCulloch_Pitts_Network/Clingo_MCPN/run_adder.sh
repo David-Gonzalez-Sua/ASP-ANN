@@ -2,11 +2,10 @@
 # 
 # Script managing the workflow to manipulate images from MNIST dataset using Clingo
 #
+# bash ./McCulloch_Pitts_Network/Clingo_MCPN/run_adder.sh 10 3 4
 # Usage: bash ./image_manipulation/image_manipulator.sh <Manipulation Type> <Image Index>
 #   where <Manipulation Type> is the name of the manipulation (e.g., color_invert)
 #         <Image Index> is the index of the image in the MNIST dataset (optional
-#
-# Inverting Colors: bash ./image_manipulation/image_manipulator.sh color_invert
 #
 
 
@@ -28,7 +27,7 @@ if [ -z "$3" ]; then
   num_bits="8"
 fi
 
-# Filenames
+# Filenames 
 eight_bit_adder="./McCulloch-Pitts_Network/Clingo_MCPN/8bit_adder.lp"
 full_adder="./McCulloch-Pitts_Network/Clingo_MCPN/full_adder_network.lp"
 neuron_def="./McCulloch-Pitts_Network/Clingo_MCPN/logical_neuron.lp"
@@ -37,7 +36,7 @@ decimal_binary_converter_python="./McCulloch-Pitts_Network/Clingo_MCPN/decimal_b
 default_input="./McCulloch-Pitts_Network/TestingAndDebugging/temp_binary_number.lp"
 graph_visualizer="./McCulloch-Pitts_Network/Clingo_MCPN/graph_visualizer.py"
 graph_code="./McCulloch-Pitts_Network/Clingo_MCPN/network_visualizer.txt"
-graph_pdf="./McCulloch-Pitts_Network/Clingo_MCPN/network_visualizer.pdf"
+graph_pdf="./McCulloch-Pitts_Network/Clingo_MCPN/network_visualizerPOSTER.pdf"
 binary_input="./McCulloch-Pitts_Network/Clingo_MCPN/binary_input.lp"
 
 if [ -z "$2" ]; then
