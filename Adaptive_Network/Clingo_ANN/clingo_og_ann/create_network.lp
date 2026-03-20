@@ -11,6 +11,7 @@
 #const h = 128.  % Hidden layer size
 #const n = 2.    % Number of hidden layers
 #const o = 10.   % Output size
+#const w = 1.    % Randomized weight boolean (1 for True, 0 for False. False will set all weights to 0.5)
 
 input_size(i).
 hidden_size(h).
