@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Usage: bash ./Adaptive_Network/Clingo_ANN/clingo_staged_ann/ann_manager.sh [create|train|test] [model_name]
-#
+# This script should be ran from the project root directory.
 # This script orchestrates the workflow for creating, training, and testing an ANN model using Clingo and Python.
 # It performs the following steps:
 # 1. Creates or loads an ANN model
@@ -16,7 +16,11 @@
 # 4. Visualizes the ANN structure and saves the graph
 # 5. Saves the trained ANN model for later use
 
-source "$(dirname "$0")/../../../venv/bin/activate"
+# bash ./Adaptive_Network/Clingo_ANN/clingo_staged_ann/ann_manager.sh create
+
+source "venv/bin/activate" \
+  || { echo "Error: could not activate venv. Make sure you have run 'python3 -m venv venv' from the project root."; 
+  exit 1; }
 
 # ======= Config ========
 # NOTE: Change these paths to your Python and Clingo executables which include necessary packages
@@ -27,6 +31,9 @@ CLINGO="clingo"
 input_size=784  # Number of input neurons (e.g., for MNIST)
 hidden_layer_sizes=(128 64)  # Sizes of hidden layers
 output_size=10  # Number of output neurons (e.g., for MNIST)
+randomize_weights=true  # Whether to initialize weights with random values (if false, weights will be initialized to 0.5)
+scaled_integers=true  # Whether to scale weights and excitations to integers (for Clingo compatibility)
+precision=4  # Number of decimal places to round to (if scaled_integers is true)
 
 # ===== Filenames ========
 folder="./Adaptive_Network/Clingo_ANN/clingo_staged_ann/"
@@ -46,22 +53,16 @@ visualized_graph="${folder}graphs/network_visualizer.png"
 # ===== Main Workflow =====
 # Step 1: Create or load ANN model
 if [ "$1" = "create" ]; then
-  echo "Creating new ANN model..."
-  $CLINGO $create_network "-c i=$input_size h=${hidden_layer_sizes[*]} o=$output_size" --out-atomf="%s." > model.lp
-  $PYTHON $save_network model.lp model_state.json
-  model_file="model_state.json"
+    echo "Creating new ANN model..."
+    model_filename=$($PYTHON $create_network --input_size $input_size --hidden_sizes "${hidden_layer_sizes[@]}" --output_size $output_size --randomize_weights $randomize_weights --scaled_integers $scaled_integers --precision $precision --identifier "staged" --folder "$folder")
+    echo "Model created and saved to: $model_filename"
 elif [ "$1" = "train" ]; then
-  echo "Loading existing ANN model for training..."
-  model_file="$2"
-  if [ -z "$model_file" ]; then
-    echo "Error: Please provide the model file to load for training."
-    exit 1
-  fi
-  if [ ! -f "$model_file" ]; then
-    echo "Error: Model file '$model_file' not found."
-    exit 1
-  fi
+    echo "Training ANN model..."
+    echo "Training functionality not implemented yet."
+elif [ "$1" = "test" ]; then
+    echo "Testing ANN model..."
+    echo "Testing functionality not implemented yet."
 else
-  echo "Error: Invalid argument. Use 'create' to create a new model or 'train' to train an existing model."
-  exit 1
+    echo "Usage: bash $0 [create|train|test]"
+    exit 1
 fi
