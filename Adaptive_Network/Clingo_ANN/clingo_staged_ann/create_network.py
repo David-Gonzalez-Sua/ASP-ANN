@@ -1,6 +1,10 @@
 '''
 create_network.py
 Creates a new ANN base model with specified parameters and saves it as a .lp file for use in Clingo.
+Usage example:
+python3 create_network.py --input_size 3 --hidden_sizes 5 5 --output_size 2 --randomize_weights --scaled_integers --precision 4 --identifier v1 --folder models/
+Testing example:
+clingo show.lp models/ann_3in_5_5hidden_2out_v1.lp | python3 ../clingo_og_ann/graph_visualizer.py -v False -b True | dot -T pdf -o 'network_visualizer.pdf'
 '''
 
 import random
@@ -24,21 +28,23 @@ def create_network(input_size, hidden_sizes, output_size, randomize_weights=True
 
     # Adding network parameters as facts
     facts.append(f"input_size({input_size}).")
+    facts.append(f"hidden_depth({len(hidden_sizes)}).")
     for i, hidden_size in enumerate(hidden_sizes):
         facts.append(f"hidden_size({i}, {hidden_size}).")
     facts.append(f"output_size({output_size}).")
-    facts.append(f"hidden_depth({len(hidden_sizes)}).")
 
 
     ## neuron(type, layer, index) -- index 0 is bias
 
     # Adding input layer neurons
-    for index in range(input_size):
+    facts.append(f"neuron(bias, 0, 0).")  # Bias neuron for input layer
+    for index in range(1, input_size + 1):  # +1 for bias neuron
         facts.append(f"neuron(input, 0, {index}).")
 
     # Adding hidden layer neurons
     for layer, layer_size in enumerate(hidden_sizes, start=1):
-        for index in range(layer_size):
+        facts.append(f"neuron(bias, {layer}, 0).")  # Bias neuron for hidden layer
+        for index in range(1, layer_size + 1):  # +1 for bias neuron
             facts.append(f"neuron(hidden, {layer}, {index}).")
     
     # Adding output layer neurons
@@ -53,8 +59,8 @@ def create_network(input_size, hidden_sizes, output_size, randomize_weights=True
     # If scaled_integers is True, scale weights to integers by multiplying by 10^precision
 
     # Adding edges from input layer to first hidden layer
-    for source_index in range(input_size):
-        for target_index in range(hidden_sizes[0]):
+    for source_index in range(input_size + 1):  # +1 for bias neuron
+        for target_index in range(1, hidden_sizes[0] + 1):  # +1 for bias neuron
             if randomize_weights:
                 weight = random.uniform(-1, 1)
             else:
@@ -69,8 +75,8 @@ def create_network(input_size, hidden_sizes, output_size, randomize_weights=True
 
     # Adding edges between hidden layers
     for layer in range(1, len(hidden_sizes)):
-        for source_index in range(hidden_sizes[layer - 1]):
-            for target_index in range(hidden_sizes[layer]):
+        for source_index in range(hidden_sizes[layer - 1] + 1):  # +1 for bias neuron
+            for target_index in range(1, hidden_sizes[layer] + 1):  # +1 for bias neuron
                 if randomize_weights:
                     weight = random.uniform(-1, 1)
                 else:
@@ -85,7 +91,7 @@ def create_network(input_size, hidden_sizes, output_size, randomize_weights=True
     
     # Adding edges from last hidden layer to output layer
     layer = len(hidden_sizes)
-    for source_index in range(hidden_sizes[-1]):
+    for source_index in range(hidden_sizes[-1] + 1):  # +1 for bias neuron
         for target_index in range(output_size):
             if randomize_weights:
                 weight = random.uniform(-1, 1)
@@ -123,10 +129,16 @@ def __main__():
     parser.add_argument('--scaled_integers', action='store_true', help='Whether to scale weights and excitations to integers (for Clingo compatibility)')
     parser.add_argument('--precision', type=int, default=4, help='Number of decimal places to round to (if --scaled_integers is set)')
     parser.add_argument('--identifier', type=str, default='', help='Optional identifier to include in the filename (e.g. for versioning or distinguishing different models)')
-    parser.add_argument('--folder', type=str, default='models', help='Folder to save the .lp file in (default: models)')
+    parser.add_argument('--folder', type=str, default='models/', help='Folder to save the .lp file in (default: models/)')
     args = parser.parse_args()
 
+    print(args.input_size, args.hidden_sizes, args.output_size, args.randomize_weights, args.scaled_integers, args.precision)
+
     facts = create_network(args.input_size, args.hidden_sizes, args.output_size, args.randomize_weights, args.scaled_integers, args.precision)
-    filename = f"{args.folder}/ann_{args.input_size}in_{'_'.join(map(str, args.hidden_sizes))}hidden_{args.output_size}out{f'_{args.identifier}' if args.identifier else ''}.lp"
+    filename = f"{args.folder}ann_{args.input_size}in_{'_'.join(map(str, args.hidden_sizes))}hidden_{args.output_size}out{f'_{args.identifier}' if args.identifier else ''}.lp"
     save_network(facts, filename)
+    print(f"ANN model saved to {filename}")
     return filename
+
+if __name__ == "__main__":
+    __main__()

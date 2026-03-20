@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 
 # Usage: bash ./Adaptive_Network/Clingo_ANN/clingo_staged_ann/ann_manager.sh [create|train|test] [model_name]
 # This script should be ran from the project root directory.
@@ -21,11 +21,9 @@
 source "venv/bin/activate" \
   || { echo "Error: could not activate venv. Make sure you have run 'python3 -m venv venv' from the project root."; 
   exit 1; }
+echo "Successfully activated Python virtual environment."
 
 # ======= Config ========
-# NOTE: Change these paths to your Python and Clingo executables which include necessary packages
-PYTHON="python3"
-CLINGO="clingo"
 
 # Parameters for creating the model
 input_size=784  # Number of input neurons (e.g., for MNIST)
@@ -54,7 +52,7 @@ visualized_graph="${folder}graphs/network_visualizer.png"
 # Step 1: Create or load ANN model
 if [ "$1" = "create" ]; then
     echo "Creating new ANN model..."
-    model_filename=$($PYTHON $create_network --input_size $input_size --hidden_sizes "${hidden_layer_sizes[@]}" --output_size $output_size --randomize_weights $randomize_weights --scaled_integers $scaled_integers --precision $precision --identifier "staged" --folder "$folder")
+    model_filename=$(python3 $create_network --input_size $input_size --hidden_sizes "${hidden_layer_sizes[@]}" --output_size $output_size --randomize_weights $randomize_weights --scaled_integers $scaled_integers --precision $precision --identifier "staged" --folder "$folder")
     echo "Model created and saved to: $model_filename"
 elif [ "$1" = "train" ]; then
     echo "Training ANN model..."

@@ -76,10 +76,13 @@ if toks_next[0].startswith("OPT") or toks_next[0].startswith("SAT"):
             n_type = param[0]
             layer = int(param[1])
             index = int(param[2])
-            if scaled_integer:
-                val = f'{(float(param[3]) / (10**precision)):.3f}'
-            else:
-                val = f'{float(param[3])}'
+            try:
+                if scaled_integer:
+                    val = f'{(float(param[3]) / (10**precision)):.3f}'
+                else:
+                    val = f'{float(param[3])}'
+            except:
+                val = 0
             # val = f'{(float(param[3]) / (1e6)):.3f}'
             # val = f'{(float(param[3]) / (1e4)):.3f}'
             

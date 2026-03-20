@@ -52,10 +52,10 @@ ann_scaled_int_forward="./Adaptive_Network/Clingo_ANN/ann_scaled_int_forward.lp"
 ann_scaled_int_backprop="./Adaptive_Network/Clingo_ANN/ann_scaled_int_backprop.lp"
 
 training_data_folder="./MNIST_Dataset/Clingo_Facts/train_data/"
-testing_data_folder="./MNIST_Dataset/Clingo_Facts/test_data/"
+#testing_data_folder="./MNIST_Dataset/Clingo_Facts/test_data/"
 
 graph_visualizer="./Adaptive_Network/Clingo_ANN/graph_visualizer.py"
-visualized_graph="./Adaptive_Network/Clingo_ANN/graphs/network_visualizer.pdf"
+#visualized_graph="./Adaptive_Network/Clingo_ANN/graphs/network_visualizer.pdf"
 
 # ======== Main Workflow ========
 # Step 1: creates or loads ANN model
