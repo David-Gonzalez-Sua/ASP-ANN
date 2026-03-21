@@ -56,7 +56,7 @@ training_data_folder="./MNIST_Dataset/Clingo_Facts/train_data/"
 testing_data_folder="./MNIST_Dataset/Clingo_Facts/test_data/"
 
 network_visualizer="${folder}network_visualizer.py"
-visualized_graph="${folder}graphs/network_visualizer.png"
+visualized_graph="${folder}graphs/network.png"
 
 # ======= Functions =======
 parse_arguments() {
@@ -113,10 +113,10 @@ if [ "$do_create" = true ]; then
     echo "Creating new ANN model..."
     if [ $scaled_integers = true ] && [ $randomize_weights = true ]; then
         echo "Creating ANN model with random weights and scaled integers..."
-        model_filename=$(python3 $create_network --input_size $input_size --hidden_sizes "${hidden_layer_sizes[@]}" --output_size $output_size --randomize_weights --scaled_integers --precision $precision --identifier $identifier --folder "${folder}models/")
+        model_filename=$(python3 $create_network --input_size $input_size --hidden_sizes "${hidden_layer_sizes[@]}" --output_size $output_size --randomize_weights --scaled_integers --precision $precision --identifier "$identifier" --folder "${folder}models/")
     elif [ $scaled_integers = true ] && [ $randomize_weights = false ]; then
         echo "Creating ANN model with 0.5 weights and scaled integers..."
-        model_filename=$(python3 $create_network --input_size $input_size --hidden_sizes "${hidden_layer_sizes[@]}" --output_size $output_size --scaled_integers --precision $precision --identifier $identifier --folder "${folder}models/")
+        model_filename=$(python3 $create_network --input_size $input_size --hidden_sizes "${hidden_layer_sizes[@]}" --output_size $output_size --scaled_integers --precision $precision --identifier "$identifier" --folder "${folder}models/")
     fi
 
     if [ $? -ne 0 ]; then
@@ -130,13 +130,28 @@ elif [ "$do_train" = true ]; then
     # Load model into working memory
     echo "Select a model to train."
     select_model
-    cp "$model_filename" "${folder}working_memory.lp"
-    echo "Model loaded into working memory: ${folder}working_memory.lp"
-
-
+    cp "$model_filename" "${working_memory}"
+    echo "Model loaded into working memory: ${working_memory}"
 
     echo "Training ANN model..."
-    echo "Training functionality not implemented yet."
+
+    # Determine the number of layers in the model by counting the numbers in the model filename
+    num_layers=$(python3 -c "
+import re
+m = re.search(r'(\d+.+(_\d+.*)*out)', '$model_filename')
+print(len(m.group(1).split('_')))
+")
+    echo "Number of layers in the model: $num_layers"
+
+    echo "Forward pass over a single layer with dummy data..."
+    for layer in $(seq 0 $((num_layers-2))); do
+        echo "Processing layer $layer -> $((layer+1))..."
+        clingo "--models=1" $working_memory $forward_pass "-c layer=$layer" "${folder}dummy_data.lp" \
+          | python3 $save_network "--scaled_integers" --precision $precision --filepath "$working_memory"
+        echo "Layer $layer -> $((layer+1)) processed. Updated model state saved to: ${working_memory}"
+    done
+
+    echo "Forward pass complete."
 
 elif [ "$do_test" = true ]; then
     echo "Testing ANN model..."

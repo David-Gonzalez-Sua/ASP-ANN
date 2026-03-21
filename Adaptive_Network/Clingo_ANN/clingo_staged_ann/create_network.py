@@ -48,7 +48,7 @@ def create_network(input_size, hidden_sizes, output_size, randomize_weights=True
             facts.append(f"neuron(hidden, {layer}, {index}).")
     
     # Adding output layer neurons
-    for index in range(output_size):
+    for index in range(1, output_size + 1):  # Output layer does not have bias neuron
         layer = len(hidden_sizes) + 1
         facts.append(f"neuron(output, {layer}, {index}).")
 

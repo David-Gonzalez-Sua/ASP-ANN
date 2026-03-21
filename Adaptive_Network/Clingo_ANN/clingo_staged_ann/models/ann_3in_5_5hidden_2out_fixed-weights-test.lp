@@ -19,8 +19,8 @@ neuron(hidden, 2, 2).
 neuron(hidden, 2, 3).
 neuron(hidden, 2, 4).
 neuron(hidden, 2, 5).
-neuron(output, 3, 0).
 neuron(output, 3, 1).
+neuron(output, 3, 2).
 edge(0, 0, 1, 1, 5000).
 edge(0, 0, 1, 2, 5000).
 edge(0, 0, 1, 3, 5000).
