@@ -52,7 +52,7 @@ create_image() {
     new_image_name="MNIST_image_${manip}"
 
     np_clingo_converter="./image_manipulation/np_clingo_converter.py"
-    original_clingo_file="./new_datasets/${original_image_name}.lp"
+    original_clingo_file="./image_manipulation/new_datasets/${original_image_name}.lp"
 
     manip_program="./image_manipulation/clingo_${manip}.lp"
     interpreter="./image_manipulation/Clingo_Image_Interpreter.py"
@@ -62,9 +62,9 @@ create_image() {
 
     # Run the commands
     #conda activate potcassco
-    $PYTHON "$np_clingo_converter" "-n" "${image_index}" "-o" "${original_image_name}" "-d" "new_datasets"
-    clingo "$manip_program" "$original_clingo_file" | python3 "$interpreter" "-o" "${new_image_name}" "-d" "new_datasets"
-    $PYTHON "$clingo_np_converter" "-f" "${new_image_name}" "-i" "new_datasets" "-o" "${new_image_name}" "-d" "new_datasets"
+    $PYTHON "$np_clingo_converter" "-n" "${image_index}" "-o" "${original_image_name}" "-d" "image_manipulation/new_datasets"
+    clingo "$manip_program" "$original_clingo_file" | python3 "$interpreter" "-o" "${new_image_name}" "-d" "image_manipulation/new_datasets"
+    $PYTHON "$clingo_np_converter" "-f" "${new_image_name}" "-i" "image_manipulation/new_datasets" "-o" "${new_image_name}" "-d" "image_manipulation/new_datasets"
 }
 
 
@@ -75,11 +75,11 @@ if [ "$manip" == "all" ]; then
         create_image
     done
 
-    $PYTHON "$image_printer" "-n" "${image_index}" "-i" "new_datasets" "-a" "True"
+    $PYTHON "$image_printer" "-n" "${image_index}" "-i" "image_manipulation/new_datasets" "-a" "True"
 
 else
     create_image
-    $PYTHON "$image_printer" "-n" "${image_index}" "-f" "${new_image_name}" "-i" "new_datasets"
+    $PYTHON "$image_printer" "-n" "${image_index}" "-f" "${new_image_name}" "-i" "image_manipulation/new_datasets"
 
 fi
 

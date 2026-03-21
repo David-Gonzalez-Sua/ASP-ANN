@@ -132,12 +132,12 @@ def __main__():
     parser.add_argument('--folder', type=str, default='models/', help='Folder to save the .lp file in (default: models/)')
     args = parser.parse_args()
 
-    print(args.input_size, args.hidden_sizes, args.output_size, args.randomize_weights, args.scaled_integers, args.precision)
+    # print(args.input_size, args.hidden_sizes, args.output_size, args.randomize_weights, args.scaled_integers, args.precision)
 
     facts = create_network(args.input_size, args.hidden_sizes, args.output_size, args.randomize_weights, args.scaled_integers, args.precision)
     filename = f"{args.folder}ann_{args.input_size}in_{'_'.join(map(str, args.hidden_sizes))}hidden_{args.output_size}out{f'_{args.identifier}' if args.identifier else ''}.lp"
     save_network(facts, filename)
-    print(f"ANN model saved to {filename}")
+    # print(f"ANN model saved to {filename}")
     return filename
 
 if __name__ == "__main__":
