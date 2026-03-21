@@ -29,7 +29,7 @@ def create_network(input_size, hidden_sizes, output_size, randomize_weights=True
     # Adding network parameters as facts
     facts.append(f"input_size({input_size}).")
     facts.append(f"hidden_depth({len(hidden_sizes)}).")
-    for i, hidden_size in enumerate(hidden_sizes):
+    for i, hidden_size in enumerate(hidden_sizes, start=1):
         facts.append(f"hidden_size({i}, {hidden_size}).")
     facts.append(f"output_size({output_size}).")
 
@@ -141,4 +141,5 @@ def __main__():
     return filename
 
 if __name__ == "__main__":
-    __main__()
+    filename = __main__()
+    print(filename)

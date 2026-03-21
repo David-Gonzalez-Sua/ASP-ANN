@@ -25,13 +25,21 @@ echo "Successfully activated Python virtual environment."
 
 # ======= Config =======
 
-# Parameters for creating a model
-input_size=784  # Number of input neurons (e.g., for MNIST)
-hidden_layer_sizes=(128 64)  # Sizes of hidden layers
-output_size=10  # Number of output neurons (e.g., for MNIST)
-randomize_weights=true  # Whether to initialize weights with random values (if false, weights will be initialized to 0.5)
-scaled_integers=true  # Whether to scale weights and excitations to integers (for Clingo compatibility)
-precision=4  # Number of decimal places to round to (if scaled_integers is true)
+## Parameters for creating a model
+# Number of input neurons (e.g., for MNIST)
+input_size=3  # default=784 # (28x28 pixels for MNIST)
+# Sizes of hidden layers (e.g., two hidden layers with 128 and 64 neurons)
+hidden_layer_sizes=(5 5)  # default=(128 64)
+# Number of output neurons (e.g., for MNIST)
+output_size=2  # default=10 # (number of classes for MNIST)
+# Whether to initialize weights with random values (if false, weights will be initialized to 0.5)
+randomize_weights=true  # default=true
+# Whether to scale weights and excitations to integers (for Clingo compatibility)
+scaled_integers=true  # default=true
+# Number of decimal places to round to (if scaled_integers is true)
+precision=4  # default=4
+# Optional identifier to include in the model filename (e.g., "staged" for staged ANN)
+identifier=""  # default="" # (leave empty for no identifier)
 
 # ======= Filenames =======
 folder="./Adaptive_Network/Clingo_ANN/clingo_staged_ann/"
@@ -105,15 +113,15 @@ if [ "$do_create" = true ]; then
     echo "Creating new ANN model..."
     if [ $scaled_integers = true ] && [ $randomize_weights = true ]; then
         echo "Creating ANN model with random weights and scaled integers..."
-        model_filename=$(python3 $create_network --input_size $input_size --hidden_sizes "${hidden_layer_sizes[@]}" --output_size $output_size --randomize_weights --scaled_integers --precision $precision --identifier "staged" --folder "${folder}models/")
-        if [ $? -ne 0 ]; then
-            echo "Error: Failed to create ANN model. Please check the output above for details."
-            exit 1
-        fi
-    else
-        echo "Error: Only random weight initialization with scaled integers is currently supported. Please set randomize_weights=true and scaled_integers=true in the config section of the script."
+        model_filename=$(python3 $create_network --input_size $input_size --hidden_sizes "${hidden_layer_sizes[@]}" --output_size $output_size --randomize_weights --scaled_integers --precision $precision --identifier $identifier --folder "${folder}models/")
+    elif [ $scaled_integers = true ] && [ $randomize_weights = false ]; then
+        echo "Creating ANN model with 0.5 weights and scaled integers..."
+        model_filename=$(python3 $create_network --input_size $input_size --hidden_sizes "${hidden_layer_sizes[@]}" --output_size $output_size --scaled_integers --precision $precision --identifier $identifier --folder "${folder}models/")
+    fi
+
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to create ANN model."
         exit 1
-        # model_filename=$(python3 $create_network --input_size $input_size --hidden_sizes "${hidden_layer_sizes[@]}" --output_size $output_size --identifier "staged" --folder "${folder}models/")
     fi
     echo "Model created and saved to: $model_filename"
 
@@ -123,8 +131,9 @@ elif [ "$do_train" = true ]; then
     echo "Select a model to train."
     select_model
     cp "$model_filename" "${folder}working_memory.lp"
+    echo "Model loaded into working memory: ${folder}working_memory.lp"
 
-    
+
 
     echo "Training ANN model..."
     echo "Training functionality not implemented yet."
