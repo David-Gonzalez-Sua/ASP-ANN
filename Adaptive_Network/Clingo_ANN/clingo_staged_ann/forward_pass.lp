@@ -6,6 +6,8 @@
 % clingo --parallel-mode=8 --verbose=3 ./Adaptive_Network/Clingo_ANN/clingo_staged_ann/working_memory.lp ./Adaptive_Network/Clingo_ANN/clingo_staged_ann/forward_pass.lp -c layer=<val>
 % clingo --parallel-mode=8 --verbose=3 ./Adaptive_Network/Clingo_ANN/clingo_staged_ann/dummy_data.lp ./Adaptive_Network/Clingo_ANN/clingo_staged_ann/working_memory.lp ./Adaptive_Network/Clingo_ANN/clingo_staged_ann/forward_pass.lp -c layer=<val>
 %
+% TODO: Add normalization to the activation functions to prevent overflow issues (batch normalization or layer normalization probably)
+%
 %% Reference for network structure and parameters (can be removed later)
 % input_size(784).
 % hidden_depth(2).
@@ -20,32 +22,44 @@
 #const layer = 0.
 
 % Set bias neurons for current layer
+%1e2 precision
+neuron(bias, 0, 0, -1) :- neuron(bias, 0, 0).
+neuron(bias, layer, 0, -100) :- neuron(bias, layer, 0), layer > 0.
 % 1e4 precision
-neuron(bias, layer, 0, -10000) :-
-    neuron(bias, layer, 0).
+% neuron(bias, 0, 0, -1) :- neuron(bias, 0, 0).
+% neuron(bias, layer, 0, -10000) :- neuron(bias, layer, 0).
 
-% Excitation functions from source layer to target layer
-% excitation(Target_Layer, Target_Index, Excitation) :-
-%     neuron(_, Target_Layer, Target_Index), Target_Index > 0,
-%     Excitation = #sum { 
-%         (Source_Value/(10000/Weight)), Source_Index :  % 1e4 precision
-%             edge(layer, Source_Index, Target_Layer, Target_Index, Weight),
-%             neuron(_, layer, Source_Index, Source_Value),
-%             Weight != 0 ;
-%         0, Source_Index :  % Checking for division by zero
-%             edge(layer, Source_Index, Target_Layer, Target_Index, Weight),
-%             neuron(_, layer, Source_Index, Source_Value),
-%             Weight == 0 }.
+% Excitation function from source layer to target layer
+% input to hidden layer (need to scale input values)
 excitation(Target_Layer, Target_Index, Excitation) :-
-    neuron(_, Target_Layer, Target_Index), 
+    neuron(_, Target_Layer, Target_Index), layer == 0,
     Target_Layer = layer + 1, Target_Index > 0,
-    Excitation = #sum { ((Source_Value*Weight)/10000), Source_Index :  % 1e4 precision
+    Excitation = #sum { (Source_Value*Weight), Source_Index :  % 1e2 precision
+    % Excitation = #sum { (Source_Value*Weight, Source_Index :  % 1e4 precision
+            edge(layer, Source_Index, Target_Layer, Target_Index, Weight),
+            neuron(_, layer, Source_Index, Source_Value) }.
+% hidden to hidden or hidden to output layer
+excitation(Target_Layer, Target_Index, Excitation) :-
+    neuron(_, Target_Layer, Target_Index), layer > 0,
+    Target_Layer = layer + 1, Target_Index > 0,
+    Excitation = #sum { ((Source_Value*Weight)/100), Source_Index :  % 1e2 precision
+    % Excitation = #sum { ((Source_Value*Weight)/10000), Source_Index :  % 1e4 precision
             edge(layer, Source_Index, Target_Layer, Target_Index, Weight),
             neuron(_, layer, Source_Index, Source_Value) }.
 #show excitation/3.
 
-% Activation functions for target layer (ReLU)
+% Activation functions for target layer
+% ReLU
+neuron(Type, Target_Layer, Target_Index, Value) :-
+    neuron(Type, Target_Layer, Target_Index),
+    excitation(Target_Layer, Target_Index, Value),
+    Target_Layer = layer + 1, Target_Index > 0, Value > 0.
 
+neuron(Type, Target_Layer, Target_Index, 0) :-
+    neuron(Type, Target_Layer, Target_Index),
+    excitation(Target_Layer, Target_Index, Value),
+    Target_Layer = layer + 1, Target_Index > 0, Value <= 0.
+#show neuron/4.
 
 % Outputs
 #show neuron/3.

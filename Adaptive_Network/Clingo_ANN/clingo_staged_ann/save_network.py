@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--save_values', action='store_true', help='Whether to include neuron values in the output file. (Default = False)')
 parser.add_argument('--scaled_integers', action='store_true', help='Whether to use scaled integers for weights. (Default = False)')
 parser.add_argument('--precision', type=int, default=4, help='Precision for scaled integers. Can be 4 or 6 for 1e4 or 1e6 respectively. (Default = 4)')
-parser.add_argument('--filepath', type=str, required=True, help='Full file path for the output file.')
+parser.add_argument('--filepath', type=str, help='Full file path for the output file. Output printed to console if not provided.')
 args = parser.parse_args()
 
 # NOTE: This script will always save excitation values if they are included in the clingo output, regardless of the -v option.
@@ -75,7 +75,8 @@ if toks_next[0].startswith("OPT") or toks_next[0].startswith("SAT"):
             elif save_values and not scaled_integers and len(param) > 3:
                 value = f'{str(param[3])}'
 
-            facts.append(f"neuron({n_type}, {layer}, {index}).")
+            if len(param) == 3:
+                facts.append(f"neuron({n_type}, {layer}, {index}).")
             if save_values and len(param) > 3:
                 facts.append(f"neuron({n_type}, {layer}, {index}, {value}).")
 
@@ -106,8 +107,11 @@ if toks_next[0].startswith("OPT") or toks_next[0].startswith("SAT"):
             facts.append(f"excitation({layer}, {index}, {excitation}).")
 
     # Saving network parameters and facts to the filepath specified by the user
-    with open(filepath, "w") as f:
-        f.write("\n".join(facts))
+    if filepath:
+        with open(filepath, "w") as f:
+                f.write("\n".join(facts))
+    else:
+        print("\n".join(facts))
 
 # In case of unsatisfiability
 elif toks_next[0].startswith("UNSAT"):

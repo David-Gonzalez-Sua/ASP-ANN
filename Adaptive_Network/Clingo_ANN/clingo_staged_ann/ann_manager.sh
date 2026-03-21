@@ -27,9 +27,9 @@ echo "Successfully activated Python virtual environment."
 
 ## Parameters for creating a model
 # Number of input neurons (e.g., for MNIST)
-input_size=3  # default=784 # (28x28 pixels for MNIST)
+input_size=7  # default=784 # (28x28 pixels for MNIST)
 # Sizes of hidden layers (e.g., two hidden layers with 128 and 64 neurons)
-hidden_layer_sizes=(5 5)  # default=(128 64)
+hidden_layer_sizes=(5 3)  # default=(128 64)
 # Number of output neurons (e.g., for MNIST)
 output_size=2  # default=10 # (number of classes for MNIST)
 # Whether to initialize weights with random values (if false, weights will be initialized to 0.5)
@@ -37,7 +37,7 @@ randomize_weights=true  # default=true
 # Whether to scale weights and excitations to integers (for Clingo compatibility)
 scaled_integers=true  # default=true
 # Number of decimal places to round to (if scaled_integers is true)
-precision=4  # default=4
+precision=2  # default=2
 # Optional identifier to include in the model filename (e.g., "staged" for staged ANN)
 identifier=""  # default="" # (leave empty for no identifier)
 
@@ -80,11 +80,11 @@ parse_arguments() {
 select_model() {
     echo "Available models:"
 
-    # Select from available models in the models folder
-    #options=("${folder}models/"*.lp)
+    # # Select from available models in the models folder
+    options=("${folder}models/"*.lp)
 
-    # Sort models by creation date (newest first)
-    mapfile -t options < <(ls -t "${folder}models/"*.lp)
+    # # Sort models by creation date (newest first)
+    # mapfile -t options < <(ls -t "${folder}models/"*.lp)
     
     # Check if there are any models available
     if [ ${#options[@]} -eq 0 ]; then
@@ -147,7 +147,7 @@ print(len(m.group(1).split('_')))
     for layer in $(seq 0 $((num_layers-2))); do
         echo "Processing layer $layer -> $((layer+1))..."
         clingo "--models=1" $working_memory $forward_pass "-c layer=$layer" "${folder}dummy_data.lp" \
-          | python3 $save_network "--scaled_integers" --precision $precision --filepath "$working_memory"
+          | python3 $save_network "--save_values" "--scaled_integers" --precision $precision > "${folder}/temp.lp" && mv "${folder}/temp.lp" $working_memory
         echo "Layer $layer -> $((layer+1)) processed. Updated model state saved to: ${working_memory}"
     done
 

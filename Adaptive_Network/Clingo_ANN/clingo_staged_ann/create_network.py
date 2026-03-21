@@ -92,7 +92,7 @@ def create_network(input_size, hidden_sizes, output_size, randomize_weights=True
     # Adding edges from last hidden layer to output layer
     layer = len(hidden_sizes)
     for source_index in range(hidden_sizes[-1] + 1):  # +1 for bias neuron
-        for target_index in range(output_size):
+        for target_index in range(1, output_size + 1):  # Output layer does not have bias neuron
             if randomize_weights:
                 weight = random.uniform(-1, 1)
             else:
