@@ -6,6 +6,12 @@
 % clingo --parallel-mode=8 --verbose=3 ./Adaptive_Network/Clingo_ANN/clingo_staged_ann/working_memory.lp ./Adaptive_Network/Clingo_ANN/clingo_staged_ann/forward_pass.lp -c layer=<val>
 % clingo --parallel-mode=8 --verbose=3 ./Adaptive_Network/Clingo_ANN/clingo_staged_ann/dummy_data.lp ./Adaptive_Network/Clingo_ANN/clingo_staged_ann/working_memory.lp ./Adaptive_Network/Clingo_ANN/clingo_staged_ann/forward_pass.lp -c layer=<val>
 %
+% cp models/ann_3in_5_5hidden_2out_fixed-weights-test.lp working_memory.lp
+% clingo working_memory.lp dummy_data.lp forward_pass.lp -c layer=0 | python3 save_network.py --save_values --scaled_integers --precision 2 > temp.lp
+% clingo working_memory.lp dummy_data.lp forward_pass.lp -c layer=1 | python3 save_network.py --save_values --scaled_integers --precision 2 > temp.lp
+% clingo working_memory.lp dummy_data.lp forward_pass.lp -c layer=2 | python3 save_network.py --save_values --scaled_integers --precision 2 > temp.lp
+% mv temp.lp working_memory.lp
+%
 % TODO: Add normalization to the activation functions to prevent overflow issues (batch normalization or layer normalization probably)
 %
 %% Reference for network structure and parameters (can be removed later)
@@ -53,18 +59,35 @@ excitation(Target_Layer, Target_Index, Excitation) :-
 neuron(Type, Target_Layer, Target_Index, Value) :-
     neuron(Type, Target_Layer, Target_Index),
     excitation(Target_Layer, Target_Index, Value),
-    Target_Layer = layer + 1, Target_Index > 0, Value > 0.
+    hidden_depth(H), Target_Layer = layer + 1,
+    Target_Layer < H + 1, Target_Index > 0, Value > 0.
 
 neuron(Type, Target_Layer, Target_Index, 0) :-
     neuron(Type, Target_Layer, Target_Index),
     excitation(Target_Layer, Target_Index, Value),
-    Target_Layer = layer + 1, Target_Index > 0, Value <= 0.
+    hidden_depth(H), Target_Layer = layer + 1,
+    Target_Layer < H + 1, Target_Index > 0, Value <= 0.
+
+% Probability distribution activation for output layer
+% Standard normalization
+out_sum(Sum) :-
+    hidden_depth(H), layer == H, output_size(O),
+    Sum = #sum { Exc, Index : excitation(layer + 1, Index, Exc), Index = 1..O }.
+#show out_sum/1.
+
+neuron(Type, Target_Layer, Target_Index, Value) :-
+    neuron(Type, Target_Layer, Target_Index),
+    excitation(Target_Layer, Target_Index, Exc),
+    hidden_depth(H), Target_Layer = layer + 1,
+    layer == H, out_sum(Sum),
+    Value = ((Exc + 1) * 100) / (Sum + 1).  % 1e2 precision
+    % Value = ((Exc + 1) * 10000) / (Sum + 1).  % 1e4 precision
 #show neuron/4.
 
 % Outputs
-#show neuron/3.
-#show edge/5.
-#show input_size/1.
-#show hidden_depth/1.
-#show hidden_size/2.
-#show output_size/1.
+% #show neuron/3.
+% #show edge/5.
+% #show input_size/1.
+% #show hidden_depth/1.
+% #show hidden_size/2.
+% #show output_size/1.

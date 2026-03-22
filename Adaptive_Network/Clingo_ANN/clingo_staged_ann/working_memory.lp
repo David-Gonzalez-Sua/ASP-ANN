@@ -8,11 +8,6 @@ excitation(1, 2, 68350).
 excitation(1, 3, 68350).
 excitation(1, 4, 68350).
 excitation(1, 5, 68350).
-excitation(2, 1, 170825).
-excitation(2, 2, 170825).
-excitation(2, 3, 170825).
-excitation(2, 4, 170825).
-excitation(2, 5, 170825).
 neuron(bias, 0, 0).
 neuron(input, 0, 1).
 neuron(input, 0, 2).
@@ -39,14 +34,8 @@ neuron(hidden, 1, 2, 68350).
 neuron(hidden, 1, 3, 68350).
 neuron(hidden, 1, 4, 68350).
 neuron(hidden, 1, 5, 68350).
-neuron(hidden, 2, 1, 170825).
-neuron(hidden, 2, 2, 170825).
-neuron(hidden, 2, 3, 170825).
-neuron(hidden, 2, 4, 170825).
-neuron(hidden, 2, 5, 170825).
 neuron(bias, 0, 0, -1).
 neuron(bias, 1, 0, -100).
-neuron(bias, 2, 0, -100).
 edge(0, 0, 1, 1, 50).
 edge(0, 0, 1, 2, 50).
 edge(0, 0, 1, 3, 50).
@@ -109,7 +98,13 @@ edge(2, 4, 3, 1, 50).
 edge(2, 4, 3, 2, 50).
 edge(2, 5, 3, 1, 50).
 edge(2, 5, 3, 2, 50).
-excitation(3, 1, 427010).
-excitation(3, 2, 427010).
-neuron(output, 3, 1, 427010).
-neuron(output, 3, 2, 427010).
+excitation(2, 1, 170825).
+excitation(2, 2, 170825).
+excitation(2, 3, 170825).
+excitation(2, 4, 170825).
+excitation(2, 5, 170825).
+neuron(hidden, 2, 1, 170825).
+neuron(hidden, 2, 2, 170825).
+neuron(hidden, 2, 3, 170825).
+neuron(hidden, 2, 4, 170825).
+neuron(hidden, 2, 5, 170825).

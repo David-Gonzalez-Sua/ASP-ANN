@@ -133,8 +133,6 @@ elif [ "$do_train" = true ]; then
     cp "$model_filename" "${working_memory}"
     echo "Model loaded into working memory: ${working_memory}"
 
-    echo "Training ANN model..."
-
     # Determine the number of layers in the model by counting the numbers in the model filename
     num_layers=$(python3 -c "
 import re
@@ -142,6 +140,8 @@ m = re.search(r'(\d+.+(_\d+.*)*out)', '$model_filename')
 print(len(m.group(1).split('_')))
 ")
     echo "Number of layers in the model: $num_layers"
+    
+    echo "Training ANN model..."
 
     echo "Forward pass over a single layer with dummy data..."
     for layer in $(seq 0 $((num_layers-2))); do
