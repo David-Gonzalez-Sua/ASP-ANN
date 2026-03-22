@@ -52,7 +52,7 @@ excitation(Target_Layer, Target_Index, Excitation) :-
     % Excitation = #sum { ((Source_Value*Weight)/10000), Source_Index :  % 1e4 precision
             edge(layer, Source_Index, Target_Layer, Target_Index, Weight),
             neuron(_, layer, Source_Index, Source_Value) }.
-#show excitation/3.
+% #show excitation/3.
 
 % Activation functions for target layer
 % ReLU
@@ -67,13 +67,14 @@ neuron(Type, Target_Layer, Target_Index, 0) :-
     excitation(Target_Layer, Target_Index, Value),
     hidden_depth(H), Target_Layer = layer + 1,
     Target_Layer < H + 1, Target_Index > 0, Value <= 0.
+% #show neuron/4.
 
 % Probability distribution activation for output layer
 % Standard normalization
 out_sum(Sum) :-
     hidden_depth(H), layer == H, output_size(O),
     Sum = #sum { Exc, Index : excitation(layer + 1, Index, Exc), Index = 1..O }.
-#show out_sum/1.
+% #show out_sum/1.
 
 neuron(Type, Target_Layer, Target_Index, Value) :-
     neuron(Type, Target_Layer, Target_Index),
@@ -82,12 +83,13 @@ neuron(Type, Target_Layer, Target_Index, Value) :-
     layer == H, out_sum(Sum),
     Value = ((Exc + 1) * 100) / (Sum + 1).  % 1e2 precision
     % Value = ((Exc + 1) * 10000) / (Sum + 1).  % 1e4 precision
-#show neuron/4.
+% #show neuron/4.
 
 % Outputs
-% #show neuron/3.
-% #show edge/5.
-% #show input_size/1.
-% #show hidden_depth/1.
-% #show hidden_size/2.
-% #show output_size/1.
+#show neuron/3.
+#show neuron/4.
+#show edge/5.
+#show input_size/1.
+#show hidden_depth/1.
+#show hidden_size/2.
+#show output_size/1.

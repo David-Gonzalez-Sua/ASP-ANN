@@ -142,7 +142,6 @@ print(len(m.group(1).split('_')))
     echo "Number of layers in the model: $num_layers"
     
     echo "Training ANN model..."
-
     echo "Forward pass over a single layer with dummy data..."
     for layer in $(seq 0 $((num_layers-2))); do
         echo "Processing layer $layer -> $((layer+1))..."
@@ -150,7 +149,6 @@ print(len(m.group(1).split('_')))
           | python3 $save_network "--save_values" "--scaled_integers" --precision $precision > "${folder}/temp.lp" && mv "${folder}/temp.lp" $working_memory
         echo "Layer $layer -> $((layer+1)) processed. Updated model state saved to: ${working_memory}"
     done
-
     echo "Forward pass complete."
 
 elif [ "$do_test" = true ]; then
