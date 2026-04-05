@@ -1,0 +1,11 @@
+clingo version 5.8.0
+Reading from ...itts_Network/Clingo_MCPN/8bit_adder.lp ...
+Solving...
+Answer: 1 (Time: 0.007s)
+binary_a(0,0,0,0,0,0,1,0) binary_b(0,0,0,0,0,0,1,1) edge(xor2,output,7,0) edge(xor2,output,6,0) edge(xor2,output,5,0) edge(xor2,output,4,0) edge(xor2,output,3,0) edge(xor2,output,2,1) edge(xor2,output,1,0) edge(xor2,output,0,1) edge(and2,or1,7,0) edge(and2,or1,6,0) edge(and2,or1,5,0) edge(and2,or1,4,0) edge(and2,or1,3,0) edge(and2,or1,2,0) edge(and2,or1,1,0) edge(and2,or1,0,0) edge(and1,or1,7,0) edge(and1,or1,6,0) edge(and1,or1,5,0) edge(and1,or1,4,0) edge(and1,or1,3,0) edge(and1,or1,2,0) edge(and1,or1,1,1) edge(and1,or1,0,0) edge(xor1,and2,7,0) edge(xor1,and2,6,0) edge(xor1,and2,5,0) edge(xor1,and2,4,0) edge(xor1,and2,3,0) edge(xor1,and2,2,0) edge(xor1,and2,1,0) edge(xor1,and2,0,1) edge(carry,and2,7,0) edge(carry,and2,6,0) edge(carry,and2,5,0) edge(carry,and2,4,0) edge(carry,and2,3,0) edge(carry,and2,2,1) edge(carry,and2,1,0) edge(carry,and2,0,0) edge(b,and1,7,0) edge(b,and1,6,0) edge(b,and1,5,0) edge(b,and1,4,0) edge(b,and1,3,0) edge(b,and1,2,0) edge(b,and1,1,1) edge(b,and1,0,1) edge(a,and1,7,0) edge(a,and1,6,0) edge(a,and1,5,0) edge(a,and1,4,0) edge(a,and1,3,0) edge(a,and1,2,0) edge(a,and1,1,1) edge(a,and1,0,0) edge(xor1,xor2,7,0) edge(xor1,xor2,6,0) edge(xor1,xor2,5,0) edge(xor1,xor2,4,0) edge(xor1,xor2,3,0) edge(xor1,xor2,2,0) edge(xor1,xor2,1,0) edge(xor1,xor2,0,1) edge(carry,xor2,7,0) edge(carry,xor2,6,0) edge(carry,xor2,5,0) edge(carry,xor2,4,0) edge(carry,xor2,3,0) edge(carry,xor2,2,1) edge(carry,xor2,1,0) edge(carry,xor2,0,0) edge(b,xor1,7,0) edge(b,xor1,6,0) edge(b,xor1,5,0) edge(b,xor1,4,0) edge(b,xor1,3,0) edge(b,xor1,2,0) edge(b,xor1,1,1) edge(b,xor1,0,1) edge(a,xor1,7,0) edge(a,xor1,6,0) edge(a,xor1,5,0) edge(a,xor1,4,0) edge(a,xor1,3,0) edge(a,xor1,2,0) edge(a,xor1,1,1) edge(a,xor1,0,0) edge(or1,carry,8,0) edge(or1,carry,7,0) edge(or1,carry,6,0) edge(or1,carry,5,0) edge(or1,carry,4,0) edge(or1,carry,3,0) edge(or1,carry,2,1) edge(or1,carry,1,0) binary_sum(0,0,0,0,0,1,0,1)
+SATISFIABLE
+
+Models       : 1+
+Calls        : 1
+Time         : 0.007s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+CPU Time     : 0.004s

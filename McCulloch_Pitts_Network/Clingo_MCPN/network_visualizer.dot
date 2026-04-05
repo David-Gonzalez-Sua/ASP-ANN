@@ -1,0 +1,60 @@
+// Graph visualization using dot
+strict digraph G {
+    rankdir=LR; // makes the graph flow left-to-right
+
+// Allign inputs a
+    { rank=same;
+      node [shape=primersite fontsize=50 fontname="times-bold" fontcolor=black color=black penwidth=1 margin=0.4 style=filled];
+
+    bit1_a [label=1 fillcolor=lightblue];
+    bit0_a [label=0 fillcolor=lightgray];
+    bit1_a [label=1 fillcolor=lightblue];
+    bit0_a [label=0 fillcolor=lightgray];
+    }
+
+// Allign inputs b
+    { rank=same;
+      node [shape=primersite fontsize=50 fontname="times-bold" fontcolor=firebrick1 color=firebrick1 penwidth=1 margin=0.4 style=filled];
+
+    bit1_b [label=1 fillcolor=lightblue];
+    bit0_b [label=1 fillcolor=lightblue];
+    bit1_b [label=1 fillcolor=lightblue];
+    bit0_b [label=1 fillcolor=lightblue];
+    }
+
+// Allign outputs
+    { rank=same;
+      node [shape=insulator fontsize=50 fontname="times-bold" penwidth=1 margin=0.4 style=filled];
+
+    bit1_output [label=0 fillcolor=lightgray];
+    bit0_output [label=1 fillcolor=lightblue];
+    }
+
+    bit1_xor2 -> bit1_output [label=0];
+    bit0_xor2 -> bit0_output [label=1];
+    bit1_and2 -> bit1_or1 [label=0];
+    bit0_and2 -> bit0_or1 [label=0];
+    bit1_and1 -> bit1_or1 [label=1];
+    bit0_and1 -> bit0_or1 [label=0];
+    bit1_xor1 -> bit1_and2 [label=0];
+    bit0_xor1 -> bit0_and2 [label=1];
+    bit1_carry -> bit1_and2 [label=0];
+    bit0_carry -> bit0_and2 [label=0];
+    bit1_b -> bit1_and1 [label=1];
+    bit0_b -> bit0_and1 [label=1];
+    bit1_a -> bit1_and1 [label=1];
+    bit0_a -> bit0_and1 [label=0];
+    bit1_xor1 -> bit1_xor2 [label=0];
+    bit0_xor1 -> bit0_xor2 [label=1];
+    bit2_carry -> bit2_xor2 [label=1];
+    bit1_carry -> bit1_xor2 [label=0];
+    bit0_carry -> bit0_xor2 [label=0];
+    bit1_b -> bit1_xor1 [label=1];
+    bit0_b -> bit0_xor1 [label=1];
+    bit1_a -> bit1_xor1 [label=1];
+    bit0_a -> bit0_xor1 [label=0];
+    bit1_or1 -> bit2_carry [label=1];
+    bit0_or1 -> bit1_carry [label=0];
+
+} // Graph
+
